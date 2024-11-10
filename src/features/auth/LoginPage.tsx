@@ -7,12 +7,10 @@ export const LoginPage = () => {
   console.log(user);
 
   return (
-    <div>
-      <Sparkles title="ServiceNova" fullHeight>
-        <div className="flex align-middle justify-center mt-10">
-          <GoogleLoginButton />
-        </div>
-      </Sparkles>
-    </div>
+    <Sparkles title="Service Nova" fullHeight>
+      <div className="flex align-middle justify-center mt-10">
+        <GoogleLoginButton />
+      </div>
+    </Sparkles>
   );
 };
