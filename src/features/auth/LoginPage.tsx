@@ -1,20 +1,18 @@
-import { ShimmerButton } from "../../components/buttons/ShimmerButton";
+import { Sparkles } from "../../components/sparkles/Sparkles";
 import { useAuth } from "../../hooks/useAuth";
+import { GoogleLoginButton } from "./components/GoogleLoginButton/GoogleLoginButton";
 
 export const LoginPage = () => {
-  const { login, logout, user } = useAuth();
-
-  const onSignIn = () => {
-    login();
-  };
-
+  const { user } = useAuth();
   console.log(user);
 
   return (
     <div>
-      <h1>Welcome to Car Services</h1>
-      <ShimmerButton onClick={onSignIn}>Sign in with Google</ShimmerButton>
-      <button onClick={logout}>Sign out</button>
+      <Sparkles title="ServiceNova" fullHeight>
+        <div className="flex align-middle justify-center mt-10">
+          <GoogleLoginButton />
+        </div>
+      </Sparkles>
     </div>
   );
 };

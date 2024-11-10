@@ -1,15 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LoginPage } from "../features/auth/LoginPage";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_auth")({
   beforeLoad: async ({ context }) => {
+    //TODO: MOVE TO COOKIE OR STORAGE
     const user = context.queryClient.getQueryData(["user"]);
-
-    if (user) {
+    
+    if (!user) {
       throw redirect({
-        to: "/dashboard",
+        to: "/login",
       });
     }
   },
-  component: LoginPage,
 });

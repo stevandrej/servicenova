@@ -35,7 +35,7 @@ export const useAuth = () => {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
-    queryClient.removeQueries({ queryKey: ["user"] });
+    queryClient.setQueryData(["user"], null);
   };
 
   return { user, login, logout };
