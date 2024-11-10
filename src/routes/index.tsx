@@ -1,15 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LoginPage } from "../features/auth/LoginPage";
+import { auth } from "../config/firebase";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async ({ context }) => {
-    const user = context.queryClient.getQueryData(["user"]);
-
-    if (user) {
-      throw redirect({
-        to: "/dashboard",
-      });
-    }
+  beforeLoad: async () => {
+    const user = auth.currentUser;
+    throw redirect({
+      to: user ? "/dashboard" : "/login",
+    });
   },
-  component: LoginPage,
 });

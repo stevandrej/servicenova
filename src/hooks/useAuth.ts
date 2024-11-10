@@ -1,42 +1,39 @@
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-  User,
-} from "firebase/auth";
+import { useCallback, useEffect, useState } from "react";
 import { auth, googleProvider } from "../config/firebase";
-import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { signInWithPopup, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { useNavigate } from "@tanstack/react-router";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        queryClient.setQueryData(["user"], currentUser);
-      }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
     });
+
     return () => unsubscribe();
-  }, [queryClient]);
+  }, []);
 
-  const login = async () => {
+  const login = useCallback(async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      setUser(result.user);
-      queryClient.setQueryData(["user"], result.user);
+      await signInWithPopup(auth, googleProvider);
+      navigate({ to: "/dashboard" });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Error signing in with Google:", error);
     }
-  };
+  }, [navigate]);
 
-  const logout = async () => {
-    await signOut(auth);
-    setUser(null);
-    queryClient.setQueryData(["user"], null);
-  };
+  const logout = useCallback(async () => {
+    try {
+      await signOut(auth);
+      navigate({ to: "/login" });
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  }, [navigate]);
 
-  return { user, login, logout };
+  return { user, loading, login, logout };
 };
