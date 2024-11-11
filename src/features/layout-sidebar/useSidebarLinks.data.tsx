@@ -1,8 +1,8 @@
 import {
   IconArrowLeft,
-  IconBrandTabler,
+  IconCar,
+  IconDashboard,
   IconSettings,
-  IconUserBolt,
 } from "@tabler/icons-react";
 import { useAuth } from "../../hooks/useAuth";
 import { Links } from "./sidebarLink.type";
@@ -13,24 +13,20 @@ export const useSidebarLinks = (): Links[] => {
   return [
     {
       label: "Dashboard",
-      href: "#",
+      href: "/dashboard",
       icon: (
-        <IconBrandTabler className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconDashboard className="text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Profile",
-      href: "#",
-      icon: (
-        <IconUserBolt className="text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
+      label: "Vehicles",
+      href: "/vehicles",
+      icon: <IconCar className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Settings",
       href: "#",
-      icon: (
-        <IconSettings className="text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
+      icon: <IconSettings className="text-neutral-200 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Logout",

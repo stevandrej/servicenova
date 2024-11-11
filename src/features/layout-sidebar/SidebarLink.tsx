@@ -3,6 +3,7 @@ import { useSidebar } from "./useSidebar";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 import { Links } from "./sidebarLink.type";
+import { Link } from "@tanstack/react-router";
 
 export const SidebarLink = ({
   link,
@@ -19,8 +20,8 @@ export const SidebarLink = ({
   };
 
   return (
-    <a
-      href={link.href}
+    <Link
+      to={link.href}
       onClick={handleClick}
       className={cn(
         "flex items-center justify-start gap-2  group/sidebar py-2",
@@ -29,7 +30,6 @@ export const SidebarLink = ({
       {...props}
     >
       {link.icon}
-
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
@@ -39,6 +39,6 @@ export const SidebarLink = ({
       >
         {link.label}
       </motion.span>
-    </a>
+    </Link>
   );
 };

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db } from "../config/firebase";
 
-async function fetchCars() {
+async function fetchVehicles() {
   try {
     const vehiclesCollection = collection(db, "vehicles");
     const snapshot = await getDocs(vehiclesCollection);
@@ -17,10 +17,9 @@ async function fetchCars() {
   }
 }
 
-export function useCars(enabled: boolean) {
+export function useFetchVehicles() {
   return useQuery({
-    queryKey: ["cars"],
-    queryFn: fetchCars,
-    enabled,
+    queryKey: ["vehicles"],
+    queryFn: fetchVehicles,
   });
-} 
+}
