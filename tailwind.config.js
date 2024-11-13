@@ -21,6 +21,9 @@ export default {
           },
         },
       },
+      fontFamily: {
+        outfit: ['Outfit', 'sans-serif'],
+      },
     },
   },
   plugins: [addVariablesForColors],
