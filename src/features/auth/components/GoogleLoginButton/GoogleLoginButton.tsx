@@ -1,11 +1,26 @@
-import { useAuth } from "../../../../hooks/useAuth";
+import { authService } from "../../../../services/auth.service";
+import { useAuthStore } from "../../../../stores/auth.store";
+import { useNavigate } from "@tanstack/react-router";
 import "./GoogleLoginButton.style.css";
+import { toast } from "react-toastify";
 
 export const GoogleLoginButton = () => {
-  const { login } = useAuth();
+
+  const navigate = useNavigate();
+  const { invalidateAuth } = useAuthStore();
+
+  const handleLogin = async () => {
+    try {
+      await authService.signInWithGoogle();
+      invalidateAuth();
+      navigate({ to: "/dashboard" });
+    } catch {
+      toast.error("Login failed");
+    }
+  };
 
   return (
-    <button className="gsi-material-button" onClick={login}>
+    <button className="gsi-material-button" onClick={handleLogin}>
       <div className="gsi-material-button-state"></div>
       <div className="gsi-material-button-content-wrapper">
         <div className="gsi-material-button-icon">

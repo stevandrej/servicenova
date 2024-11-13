@@ -1,22 +1,14 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { MainLayout } from "../layouts/MainLayout";
-import { auth } from "../config/firebase";
+import { authQueryOptions } from "../stores/auth.store";
 
 export const Route = createFileRoute("/_auth")({
-  beforeLoad: async () => {
-    await new Promise((resolve) => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        unsubscribe();
-        resolve(user);
-      });
-    });
-
-    const user = auth.currentUser;
+  loader: async ({ context: { queryClient } }) => {
+    const user = await queryClient.ensureQueryData(authQueryOptions);
     if (!user) {
-      throw redirect({
-        to: "/login",
-      });
+      throw redirect({ to: "/login" });
     }
+    return { user };
   },
   component: () => (
     <MainLayout>

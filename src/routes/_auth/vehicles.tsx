@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useFetchVehicles } from "../../services/useFetchVehicles";
+import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
 
 export const Route = createFileRoute("/_auth/vehicles")({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(vehiclesQueryOptions),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: vehicles } = useFetchVehicles();
-  
-  return vehicles?.map((vehicle) => (
-    <div key={vehicle.id}>{vehicle?.make}</div>
-  ));
+  const vehicles = Route.useLoaderData();
+
+  console.log(vehicles);
+
+  //TODO: render the cars list
+  return <>Vehicles here...</>;
 }
