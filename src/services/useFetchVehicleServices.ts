@@ -12,10 +12,14 @@ export const fetchVehicleServices = async (vehicleId: string) => {
 
     const snapshot = await getDocs(vehicleServicesCollection);
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as TService[];
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...data,
+        id: doc.id,
+        date: data.date.toDate(),
+      };
+    }) as TService[];
   } catch (error) {
     console.error("Error fetching vehicle services:", error);
     throw new Error(
