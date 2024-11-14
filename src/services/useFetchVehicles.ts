@@ -14,7 +14,7 @@ async function fetchVehicles() {
     })) as TVehicle[];
   } catch (error) {
     console.error("Error fetching vehicles:", error);
-    throw error;
+    throw new Error("Failed to fetch vehicles. Please try again later.");
   }
 }
 

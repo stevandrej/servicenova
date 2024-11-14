@@ -15,7 +15,7 @@ function RouteComponent() {
   return (
     <div
       className={cn(
-        "grid gap-4",
+        "grid gap-9",
         "md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] xs:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]"
       )}
     >

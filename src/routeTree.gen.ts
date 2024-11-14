@@ -16,6 +16,7 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthVehiclesImport } from './routes/_auth/vehicles'
 import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
+import { Route as AuthVehiclesVehicleIdImport } from './routes/_auth/vehicles_/$vehicleId'
 
 // Create/Update Routes
 
@@ -45,6 +46,12 @@ const AuthVehiclesRoute = AuthVehiclesImport.update({
 const AuthDashboardRoute = AuthDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthVehiclesVehicleIdRoute = AuthVehiclesVehicleIdImport.update({
+  id: '/vehicles_/$vehicleId',
+  path: '/vehicles/$vehicleId',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -87,6 +94,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVehiclesImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/vehicles_/$vehicleId': {
+      id: '/_auth/vehicles_/$vehicleId'
+      path: '/vehicles/$vehicleId'
+      fullPath: '/vehicles/$vehicleId'
+      preLoaderRoute: typeof AuthVehiclesVehicleIdImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
@@ -95,11 +109,13 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthDashboardRoute: typeof AuthDashboardRoute
   AuthVehiclesRoute: typeof AuthVehiclesRoute
+  AuthVehiclesVehicleIdRoute: typeof AuthVehiclesVehicleIdRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthDashboardRoute: AuthDashboardRoute,
   AuthVehiclesRoute: AuthVehiclesRoute,
+  AuthVehiclesVehicleIdRoute: AuthVehiclesVehicleIdRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -110,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthDashboardRoute
   '/vehicles': typeof AuthVehiclesRoute
+  '/vehicles/$vehicleId': typeof AuthVehiclesVehicleIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -118,6 +135,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthDashboardRoute
   '/vehicles': typeof AuthVehiclesRoute
+  '/vehicles/$vehicleId': typeof AuthVehiclesVehicleIdRoute
 }
 
 export interface FileRoutesById {
@@ -127,13 +145,20 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_auth/dashboard': typeof AuthDashboardRoute
   '/_auth/vehicles': typeof AuthVehiclesRoute
+  '/_auth/vehicles_/$vehicleId': typeof AuthVehiclesVehicleIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/dashboard' | '/vehicles'
+  fullPaths:
+    | '/'
+    | ''
+    | '/login'
+    | '/dashboard'
+    | '/vehicles'
+    | '/vehicles/$vehicleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/dashboard' | '/vehicles'
+  to: '/' | '' | '/login' | '/dashboard' | '/vehicles' | '/vehicles/$vehicleId'
   id:
     | '__root__'
     | '/'
@@ -141,6 +166,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_auth/dashboard'
     | '/_auth/vehicles'
+    | '/_auth/vehicles_/$vehicleId'
   fileRoutesById: FileRoutesById
 }
 
@@ -178,7 +204,8 @@ export const routeTree = rootRoute
       "filePath": "_auth.tsx",
       "children": [
         "/_auth/dashboard",
-        "/_auth/vehicles"
+        "/_auth/vehicles",
+        "/_auth/vehicles_/$vehicleId"
       ]
     },
     "/login": {
@@ -190,6 +217,10 @@ export const routeTree = rootRoute
     },
     "/_auth/vehicles": {
       "filePath": "_auth/vehicles.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/vehicles_/$vehicleId": {
+      "filePath": "_auth/vehicles_/$vehicleId.tsx",
       "parent": "/_auth"
     }
   }

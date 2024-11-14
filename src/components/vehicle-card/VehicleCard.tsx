@@ -1,6 +1,7 @@
 import { TVehicle } from "../../types/vehicle.type";
 import { cn } from "../../lib/utils";
 import { getStatusColorClasses } from "./getStatusColorClasses";
+import { useNavigate } from "@tanstack/react-router";
 
 interface VehicleCardProps {
   vehicle: TVehicle;
@@ -9,9 +10,20 @@ interface VehicleCardProps {
 
 export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
   const statusColorClasses = getStatusColorClasses(nextService);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate({
+      to: `/vehicles/$vehicleId`,
+      params: { vehicleId: vehicle.id },
+    });
+  };
 
   return (
-    <div className="relative rounded-md overflow-hidden w-full shadow-lg transform-gpu transition-transform duration-400 hover:scale-[1.01] hover:cursor-pointer">
+    <div
+      onClick={handleClick}
+      className="relative rounded-md overflow-hidden w-full shadow-lg transform-gpu transition-transform duration-400 hover:scale-[1.01] hover:cursor-pointer"
+    >
       {/* Image */}
       <div className="bg-neutral-200">
         <img
@@ -34,7 +46,10 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
             <span className="capitalize">{vehicle.model}</span>
           </h3>
           <p className="font-outfit text-sm opacity-80 font-medium tracking-wide uppercase">
-            <span className="text-xs tracking-tight normal-case">Plate Number:</span> {vehicle.plate}
+            <span className="text-xs tracking-tight normal-case">
+              Plate Number:
+            </span>{" "}
+            {vehicle.plate}
           </p>
         </div>
       </div>

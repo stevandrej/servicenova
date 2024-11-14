@@ -1,10 +1,4 @@
-export interface TService {
-  date: Date;
-  mileage: number;
-  price: number;
-  serviceType: string;
-  notes: string;
-}
+import { TService } from "./service.type";
 
 export interface TVehicle {
   id: string;
@@ -12,5 +6,6 @@ export interface TVehicle {
   model: string;
   plate: string;
   year: number;
-  services: TService[];
 }
+
+export type TVehicleWithServices = TVehicle & { services: TService[] };
