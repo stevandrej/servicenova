@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
-import { VehicleCard } from "../../components/vehicle-card/VehicleCard";
+import { VehicleCard } from "../../features/vehicle-card/VehicleCard";
 import { cn } from "../../lib/utils";
 
 export const Route = createFileRoute("/_auth/vehicles")({

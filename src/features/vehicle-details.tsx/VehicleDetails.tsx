@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type { TVehicleWithServices } from "../../types/vehicle.type";
 import { formatDate } from "../../utils/formatDate";
-import { Timeline } from "../timeline/Timeline";
+import { Timeline } from "../../components/timeline/Timeline";
 import { ServiceItem } from "./ServiceItem";
 
 interface VehicleDetailsProps {

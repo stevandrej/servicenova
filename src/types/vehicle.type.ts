@@ -6,6 +6,7 @@ export interface TVehicle {
   model: string;
   plate: string;
   year: number;
+  imageUrl: string;
 }
 
 export type TVehicleWithServices = TVehicle & { services: TService[] };

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { VehicleDetails } from "../../../components/vehicle-details.tsx/VehicleDetails";
+import { VehicleDetails } from "../../../features/vehicle-details.tsx/VehicleDetails";
 import { vehiclesQueryOptions } from "../../../services/useFetchVehicles";
 import { Link } from "@tanstack/react-router";
 import { vehicleServicesQueryOptions } from "../../../services/useFetchVehicleServices";
