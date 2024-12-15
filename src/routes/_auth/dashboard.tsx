@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
+import { Dashboard } from "../../features/dashboard/Dashboard";
 
 export const Route = createFileRoute('/_auth/dashboard')({
-  component: RouteComponent,
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(vehiclesQueryOptions),
+  component: Dashboard,
 })
-
-function RouteComponent() {
-  return 'Hello /_auth/dashboard!'
-}

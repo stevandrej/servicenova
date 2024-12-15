@@ -4,6 +4,7 @@ import { SidebarProvider } from "./SidebarProvider";
 import { SidebarLink } from "./SidebarLink";
 import { useSidebarLinks } from "./useSidebarLinks.data";
 import { SidebarBody } from "./SidebarBody";
+import { useAuth } from "../../hooks/useAuth";
 
 export const Sidebar = ({
   open,
@@ -16,6 +17,7 @@ export const Sidebar = ({
 }) => {
 
   const links = useSidebarLinks();
+  const { user } = useAuth();
 
   return (
     <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
@@ -30,7 +32,7 @@ export const Sidebar = ({
         <div>
           <SidebarLink
             link={{
-              label: "Manu Arora",
+              label: user?.displayName || "Guest",
               href: "#",
               icon: <></>,
             }}

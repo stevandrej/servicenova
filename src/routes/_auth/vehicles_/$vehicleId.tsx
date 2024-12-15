@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { VehicleDetails } from "../../../features/vehicle-details.tsx/VehicleDetails";
 import { vehiclesQueryOptions } from "../../../services/useFetchVehicles";
 import { Link } from "@tanstack/react-router";
 import { vehicleServicesQueryOptions } from "../../../services/useFetchVehicleServices";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { VehicleDetails } from "../../../features/vehicle-details/VehicleDetails";
 
 export const Route = createFileRoute("/_auth/vehicles_/$vehicleId")({
   component: RouteComponent,

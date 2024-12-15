@@ -1,28 +1,42 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { db } from "../config/firebase";
-import { TVehicle } from "../types/vehicle.type";
+import { TVehicle, TVehicleWithServices } from "../types/vehicle.type";
+import { TService } from "../types/service.type";
 
-async function fetchVehicles() {
-  try {
-    const vehiclesCollection = collection(db, "vehicles");
-    const snapshot = await getDocs(vehiclesCollection);
+async function fetchVehicles(): Promise<TVehicleWithServices[]> {
+  const vehiclesCollection = collection(db, "vehicles");
+  const vehiclesSnapshot = await getDocs(query(vehiclesCollection));
+  
+  const vehicles = vehiclesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  })) as TVehicle[];
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as TVehicle[];
-  } catch (error) {
-    console.error("Error fetching vehicles:", error);
-    throw new Error("Failed to fetch vehicles. Please try again later.");
-  }
+  // Fetch services for each vehicle
+  const vehiclesWithServices = await Promise.all(
+    vehicles.map(async (vehicle) => {
+      const servicesCollection = collection(db, `vehicles/${vehicle.id}/services`);
+      const servicesSnapshot = await getDocs(query(servicesCollection));
+      
+      const services = servicesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        date: doc.data().date.toDate(), // Convert Firestore Timestamp to Date
+      })) as TService[];
+
+      return {
+        ...vehicle,
+        services: services.sort((a, b) => b.date.getTime() - a.date.getTime()),
+      };
+    })
+  );
+
+  return vehiclesWithServices;
 }
 
-export const vehiclesQueryOptions = queryOptions({
-  queryKey: ["vehicles"] as const,
+export const vehiclesQueryOptions = {
+  queryKey: ['vehicles'] as const,
   queryFn: fetchVehicles,
-});
+};
 
-export function useFetchVehicles() {
-  return useQuery(vehiclesQueryOptions);
-}
+export type VehiclesQuery = typeof vehiclesQueryOptions;
