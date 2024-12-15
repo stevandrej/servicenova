@@ -1,9 +1,9 @@
 import { useRef } from "react";
-import { ShimmerButton } from "../../components/buttons/ShimmerButton";
-import { Input } from "../../components/input/Input";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "react-toastify";
 import { useAddVehicle } from "../../services/useAddVehicle";
+import { Input, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
+import { IconCar } from "@tabler/icons-react";
 
 export const AddVehicleForm = () => {
   const makeRef = useRef<HTMLInputElement>(null);
@@ -39,29 +39,96 @@ export const AddVehicleForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="grid gap-6 mb-6 md:grid-cols-2">
-        <Input label="Make" ref={makeRef} required />
-        <Input label="Model" ref={modelRef} required />
-        <Input
-          label="Year"
-          ref={yearRef}
-          type="number"
-          min="1900"
-          max={new Date().getFullYear() + 1}
-          required
-        />
-        <Input label="Plate Number" ref={plateNumberRef} required />
-        <Input
-          type="file"
-          label="Vehicle Image"
-          ref={imageRef}
-          accept="image/*"
-        />
-        <ShimmerButton type="submit" disabled={isPending}>
-          {isPending ? "Adding Vehicle..." : "Add Vehicle"}
-        </ShimmerButton>
-      </div>
-    </form>
+    <div className="flex justify-center items-start min-h-[80vh] p-4">
+      <Card className="w-full max-w-lg">
+        <CardHeader className="flex gap-3 p-6 bg-gradient-to-r from-primary-900 to-primary-800">
+          <IconCar className="text-white w-8 h-8" />
+          <div className="flex flex-col">
+            <p className="text-xl text-white font-semibold">Add New Vehicle</p>
+            <p className="text-small text-white/60">
+              Enter your vehicle details below
+            </p>
+          </div>
+        </CardHeader>
+        <CardBody className="p-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Make"
+                ref={makeRef}
+                isRequired
+                placeholder="e.g., Toyota"
+                variant="bordered"
+                labelPlacement="outside"
+                classNames={{
+                  label: "font-medium",
+                }}
+              />
+              <Input
+                label="Model"
+                ref={modelRef}
+                isRequired
+                placeholder="e.g., Camry"
+                variant="bordered"
+                labelPlacement="outside"
+                classNames={{
+                  label: "font-medium",
+                }}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Year"
+                ref={yearRef}
+                type="number"
+                min={1900}
+                max={new Date().getFullYear() + 1}
+                isRequired
+                placeholder="e.g., 2024"
+                variant="bordered"
+                labelPlacement="outside"
+                classNames={{
+                  label: "font-medium",
+                }}
+              />
+              <Input
+                label="Plate Number"
+                ref={plateNumberRef}
+                isRequired
+                placeholder="e.g., ABC-123"
+                variant="bordered"
+                labelPlacement="outside"
+                classNames={{
+                  label: "font-medium",
+                }}
+              />
+            </div>
+            <div>
+              <Input
+                type="file"
+                label="Vehicle Image"
+                ref={imageRef}
+                accept="image/*"
+                variant="bordered"
+                labelPlacement="outside"
+                classNames={{
+                  label: "font-medium",
+                }}
+                description="Upload a photo of your vehicle"
+              />
+            </div>
+            <Button
+              type="submit"
+              isLoading={isPending}
+              color="primary"
+              size="lg"
+              className="w-full mt-4 font-medium"
+            >
+              {isPending ? "Adding Vehicle..." : "Add Vehicle"}
+            </Button>
+          </form>
+        </CardBody>
+      </Card>
+    </div>
   );
 };
