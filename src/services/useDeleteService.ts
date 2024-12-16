@@ -3,18 +3,27 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export function useDeleteService() {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (serviceId: string) => {
-      const serviceRef = doc(db, `services/${serviceId}`);
-      await deleteDoc(serviceRef);
-      return serviceId;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["vehicleServices"],
-      });
-    },
-  });
-} 
+	return useMutation({
+		mutationFn: async ({
+			vehicleId,
+			serviceId,
+		}: {
+			vehicleId: string;
+			serviceId: string;
+		}) => {
+			const serviceRef = doc(
+				db,
+				`vehicles/${vehicleId}/services/${serviceId}`
+			);
+			await deleteDoc(serviceRef);
+			return serviceId;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["vehicleServices"],
+			});
+		},
+	});
+}

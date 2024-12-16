@@ -27,7 +27,7 @@ function RouteComponent() {
         <Button 
           color="primary" 
           endContent={<IconPlus size={20} />}
-          onClick={onOpen}
+          onPress={onOpen}
         >
           Add Vehicle
         </Button>
@@ -45,7 +45,7 @@ function RouteComponent() {
           <p className="text-gray-500 mb-4">Add your first vehicle to get started</p>
           <Button 
             color="primary"
-            onClick={onOpen}
+            onPress={onOpen}
           >
             Add Your First Vehicle
           </Button>

@@ -43,12 +43,13 @@ export const VehicleDetails = memo(({ vehicle }: VehicleDetailsProps) => {
         title: formatDate(service.date),
         content: (
           <ServiceItem
+            vehicleId={vehicle.id}
             service={service}
             onEdit={() => handleEditService(service)}
           />
         ),
       })),
-    [sortedServices, handleEditService]
+    [sortedServices, handleEditService, vehicle.id]
   );
 
   const totalSpent = useMemo(() => 

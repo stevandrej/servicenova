@@ -6,16 +6,17 @@ import { toast } from "react-toastify";
 import { useDeleteService } from "../../services/useDeleteService";
 
 interface ServiceItemProps {
+  vehicleId: string;
   service: TService;
   onEdit: () => void;
 }
 
-export const ServiceItem = memo(({ service, onEdit }: ServiceItemProps) => {
+export const ServiceItem = memo(({ vehicleId, service, onEdit }: ServiceItemProps) => {
   const { mutate: deleteService } = useDeleteService();
 
   const handleDelete = () => {
     if (confirm("Are you sure you want to delete this service record?")) {
-      deleteService(service.id, {
+      deleteService({vehicleId, serviceId: service.id}, {
         onSuccess: () => {
           toast.success("Service record deleted successfully");
         },
@@ -40,7 +41,7 @@ export const ServiceItem = memo(({ service, onEdit }: ServiceItemProps) => {
             isIconOnly
             variant="light"
             size="sm"
-            onClick={onEdit}
+            onPress={onEdit}
           >
             <IconEdit size={18} />
           </Button>
