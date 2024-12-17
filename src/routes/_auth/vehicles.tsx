@@ -59,6 +59,7 @@ function RouteComponent() {
             <VehicleCard
               key={vehicle.id}
               vehicle={vehicle}
+              // TODO: get next service date from services
               nextService={new Date("2024-09-10")}
             />
           ))}

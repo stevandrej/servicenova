@@ -1,6 +1,6 @@
 import { memo, useMemo, useState, useCallback } from "react";
 import type { TVehicleWithServices } from "../../types/vehicle.type";
-import { formatDate } from "../../utils/formatDate";
+import { formatDateToLongDate } from "../../utils/formatDate";
 import { Timeline } from "../../components/timeline/Timeline";
 import { ServiceItem } from "./ServiceItem";
 import { Button, useDisclosure } from "@nextui-org/react";
@@ -40,7 +40,7 @@ export const VehicleDetails = memo(({ vehicle }: VehicleDetailsProps) => {
   const timelineData = useMemo(
     () =>
       sortedServices.map((service) => ({
-        title: formatDate(service.date),
+        title: formatDateToLongDate(service.date),
         content: (
           <ServiceItem
             vehicleId={vehicle.id}
@@ -105,7 +105,7 @@ export const VehicleDetails = memo(({ vehicle }: VehicleDetailsProps) => {
           />
           <VehicleMetricCard
             title="Last Service"
-            value={lastServiceDate ? formatDate(lastServiceDate) : "No services"}
+            value={lastServiceDate ? formatDateToLongDate(lastServiceDate) : "No services"}
             description={lastServiceDate ? `${sortedServices[0]?.serviceType}` : "No service history"}
           />
           <VehicleMetricCard
