@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
+import { TService } from "../types/service.type";
 
 export function useDeleteService() {
 	const queryClient = useQueryClient();
@@ -20,10 +21,15 @@ export function useDeleteService() {
 			await deleteDoc(serviceRef);
 			return serviceId;
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ["vehicleServices"],
-			});
+		onSuccess: (_, { vehicleId, serviceId }) => {
+			queryClient.setQueryData<TService[]>(
+				["vehicleServices", vehicleId],
+				(oldData) => {
+					return oldData?.filter(
+						(service) => service.id !== serviceId
+					);
+				}
+			);
 		},
 	});
 }

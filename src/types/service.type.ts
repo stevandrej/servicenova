@@ -5,5 +5,5 @@ export interface TService {
   price: number;
   serviceType: string;
   notes: string;
-  nextServiceDate?: Date;
+  nextServiceDate: Date | null;
 }

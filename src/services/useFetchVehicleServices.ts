@@ -19,6 +19,9 @@ export const fetchVehicleServices = async (vehicleId: string) => {
 				...data,
 				id: doc.id,
 				date: firebaseTimestampToDate(data.date),
+				nextServiceDate: data.nextServiceDate
+					? firebaseTimestampToDate(data.nextServiceDate)
+					: null,
 			};
 		}) as TService[];
 	} catch (error) {
