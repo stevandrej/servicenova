@@ -5,7 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@nextui-org/react";
 import { IconTrash } from "@tabler/icons-react";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
-import fallbackVehicleImage from "../../assets/default-vehicle.jpg";
+import fallbackVehicleImage from "../../assets/no-image.jpg";
 
 interface VehicleCardProps {
   vehicle: TVehicle;
@@ -33,7 +33,6 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
       deleteVehicle(vehicle.id);
     }
   };
-
   return (
     <div
       onClick={handleClick}
@@ -53,9 +52,9 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
       </Button>
 
       {/* Image */}
-      <div className="bg-neutral-200">
+      <div className="bg-neutral-200 h-64">
         <img
-          src={vehicle.imageUrl ?? fallbackVehicleImage}
+          src={vehicle.imageUrl || fallbackVehicleImage}
           alt={`${vehicle.make} ${vehicle.model}`}
           className="w-full h-full object-cover"
         />
