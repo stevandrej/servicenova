@@ -4,11 +4,12 @@ import { formatDateToLongDate } from "../../utils/formatDate";
 import { Timeline } from "../../components/timeline/Timeline";
 import { ServiceItem } from "./ServiceItem";
 import { Button, useDisclosure } from "@nextui-org/react";
-import { IconPlus, IconArrowLeft } from "@tabler/icons-react";
+import { IconPlus, IconArrowLeft, IconTrash } from "@tabler/icons-react";
 import { ServiceFormModal } from "./ServiceFormModal";
 import { TService } from "../../types/service.type";
 import { VehicleMetricCard } from "./VehicleMetricCard";
 import { useNavigate } from "@tanstack/react-router";
+import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 
 interface VehicleDetailsProps {
   vehicle: TVehicleWithServices;
@@ -19,6 +20,7 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
   const [selectedService, setSelectedService] = useState<TService | null>(null);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const navigate = useNavigate();
+  const { mutate: deleteVehicle, isPending: isDeleting } = useDeleteVehicle();
 
   const handleAddService = () => {
     setSelectedService(null);
@@ -47,7 +49,6 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
       <ServiceItem
         vehicleId={vehicle.id}
         service={service}
-        nextServiceDate={vehicle.nextServiceDate}
         onEdit={() => handleEditService(service)}
       />
     ),
@@ -68,17 +69,41 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
     [vehicle.services]
   );
 
+  const handleDeleteVehicle = () => {
+    if (
+      confirm(
+        "Are you sure you want to delete this vehicle? This action cannot be undone."
+      )
+    ) {
+      deleteVehicle(vehicle.id, {
+        onSuccess: () => {
+          navigate({ to: "/vehicles" });
+        },
+      });
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="light"
-        startContent={<IconArrowLeft size={18} />}
-        onPress={() => navigate({ to: "/vehicles" })}
-        className="mb-2"
-      >
-        Back to Vehicles
-      </Button>
+      <div className="flex justify-between items-center">
+        <Button
+          variant="light"
+          startContent={<IconArrowLeft size={18} />}
+          onPress={() => navigate({ to: "/vehicles" })}
+          className="mb-2"
+        >
+          Back to Vehicles
+        </Button>
+        <Button
+          color="danger"
+          variant="light"
+          isLoading={isDeleting}
+          startContent={<IconTrash size={18} />}
+          onPress={handleDeleteVehicle}
+        >
+          Delete Vehicle
+        </Button>
+      </div>
 
       {/* Vehicle Header */}
       <div className="p-6 bg-white rounded-lg shadow-sm border">
@@ -99,10 +124,14 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
             Add Service
           </Button>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-4">
           <VehicleMetricCard
-            title="Total Services"
-            value={vehicle.services.length.toString()}
+            title="Next Service Due"
+            value={
+              vehicle.nextServiceDate
+                ? formatDateToLongDate(vehicle.nextServiceDate)
+                : "Not scheduled"
+            }
           />
           <VehicleMetricCard
             title="Last Service"
@@ -116,6 +145,10 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
                 ? `${sortedServices[0]?.serviceType}`
                 : "No service history"
             }
+          />
+          <VehicleMetricCard
+            title="Total Services"
+            value={vehicle.services.length.toString()}
           />
           <VehicleMetricCard
             title="Total Spent"

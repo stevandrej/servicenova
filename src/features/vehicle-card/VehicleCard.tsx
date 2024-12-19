@@ -2,6 +2,9 @@ import { TVehicle } from "../../types/vehicle.type";
 import { cn } from "../../lib/utils";
 import { getStatusColorClasses } from "./getStatusColorClasses";
 import { useNavigate } from "@tanstack/react-router";
+import { Button } from "@nextui-org/react";
+import { IconTrash } from "@tabler/icons-react";
+import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 
 interface VehicleCardProps {
   vehicle: TVehicle;
@@ -11,6 +14,7 @@ interface VehicleCardProps {
 export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
   const statusColorClasses = getStatusColorClasses(nextService);
   const navigate = useNavigate();
+  const { mutate: deleteVehicle, isPending: isDeleting } = useDeleteVehicle();
 
   const handleClick = () => {
     navigate({
@@ -19,11 +23,30 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
     });
   };
 
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) {
+      deleteVehicle(vehicle.id);
+    }
+  };
+
   return (
     <div
       onClick={handleClick}
-      className="relative rounded-md overflow-hidden w-full shadow-lg transform-gpu transition-transform duration-400 hover:scale-[1.01] hover:cursor-pointer"
+      className="relative rounded-md overflow-hidden w-full shadow-lg transform-gpu transition-transform duration-400 hover:scale-[1.01] hover:cursor-pointer group"
     >
+      {/* Delete Button - Visible on Hover */}
+      <Button
+        isIconOnly
+        color="danger"
+        variant="flat"
+        size="sm"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        onPress={handleDelete}
+        isLoading={isDeleting}
+      >
+        <IconTrash size={18} />
+      </Button>
+
       {/* Image */}
       <div className="bg-neutral-200">
         <img

@@ -3,17 +3,15 @@ import { TService } from "../../types/service.type";
 import { Button } from "@nextui-org/react";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteService } from "../../services/useDeleteService";
-import { formatDateToLongDate } from "../../utils/formatDate";
 
 interface ServiceItemProps {
   vehicleId: string;
-  nextServiceDate?: Date | null;
   service: TService;
   onEdit: () => void;
 }
 
 export const ServiceItem = memo(
-  ({ vehicleId, nextServiceDate, service, onEdit }: ServiceItemProps) => {
+  ({ vehicleId, service, onEdit }: ServiceItemProps) => {
     const { mutate: deleteService } = useDeleteService();
 
     const handleDelete = () => {
@@ -50,11 +48,6 @@ export const ServiceItem = memo(
           <p className="text-sm text-gray-600">{service.notes}</p>
           <p className="font-semibold">${service.price.toLocaleString()}</p>
         </div>
-        {nextServiceDate && (
-          <p className="text-sm text-gray-600">
-            Next Service: {formatDateToLongDate(nextServiceDate)}
-          </p>
-        )}
       </div>
     );
   }
