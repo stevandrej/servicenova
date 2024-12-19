@@ -7,6 +7,7 @@ export type TVehicle = {
   year: number;
   plate: string;
   imageUrl?: string;
+  nextServiceDate?: Date | null;
 };
 
 export type TVehicleWithServices = TVehicle & {

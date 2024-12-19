@@ -24,6 +24,7 @@ interface ServiceFormModalProps {
 	mode: "add" | "edit";
 	service?: TService | null;
 	vehicleId: string;
+	nextService?: Date | null;
 }
 
 export const ServiceFormModal = ({
@@ -32,6 +33,7 @@ export const ServiceFormModal = ({
 	mode,
 	service,
 	vehicleId,
+	nextService,
 }: ServiceFormModalProps) => {
 	const [date, setDate] = useState<CalendarDate>(
 		parseDate(new Date().toISOString().split("T")[0])
@@ -48,14 +50,12 @@ export const ServiceFormModal = ({
 					: parseDate(new Date().toISOString().split("T")[0])
 			);
 			setNextServiceDate(
-				service?.nextServiceDate
-					? parseDate(
-							service.nextServiceDate.toISOString().split("T")[0]
-					  )
+				nextService
+					? parseDate(nextService.toISOString().split("T")[0])
 					: null
 			);
 		}
-	}, [isOpen, service]);
+	}, [isOpen, service, nextService]);
 
 	const mileageRef = useRef<HTMLInputElement>(null);
 	const serviceTypeRef = useRef<HTMLInputElement>(null);

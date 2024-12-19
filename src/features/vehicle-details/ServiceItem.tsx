@@ -8,12 +8,13 @@ import { formatDateToLongDate } from "../../utils/formatDate";
 
 interface ServiceItemProps {
 	vehicleId: string;
+	nextServiceDate?: Date | null;
 	service: TService;
 	onEdit: () => void;
 }
 
 export const ServiceItem = memo(
-	({ vehicleId, service, onEdit }: ServiceItemProps) => {
+	({ vehicleId, nextServiceDate, service, onEdit }: ServiceItemProps) => {
 		const { mutate: deleteService } = useDeleteService();
 
 		const handleDelete = () => {
@@ -71,10 +72,10 @@ export const ServiceItem = memo(
 						${service.price.toLocaleString()}
 					</p>
 				</div>
-				{service.nextServiceDate && (
+				{nextServiceDate && (
 					<p className="text-sm text-gray-600">
 						Next Service:{" "}
-						{formatDateToLongDate(service.nextServiceDate)}
+						{formatDateToLongDate(nextServiceDate)}
 					</p>
 				)}
 			</div>

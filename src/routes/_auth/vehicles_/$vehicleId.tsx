@@ -1,35 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../../services/useFetchVehicles";
 import { Link } from "@tanstack/react-router";
-import { vehicleServicesQueryOptions } from "../../../services/useFetchVehicleServices";
-import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { TVehicle } from "../../../types/vehicle.type";
 import { VehicleDetails } from "../../../features/vehicle-details/VehicleDetails";
+import { useQuery } from "@tanstack/react-query";
+import { Spinner } from "@nextui-org/react";
 
 export const Route = createFileRoute("/_auth/vehicles_/$vehicleId")({
   component: RouteComponent,
-  loader: async ({ context: { queryClient }, params: { vehicleId } }) => {
-    const vehicles = await queryClient.ensureQueryData(vehiclesQueryOptions);
-    const selectedVehicle = vehicles.find(
-      (vehicle) => vehicle.id === vehicleId
-    );
-
-    if (!selectedVehicle) {
-      throw new Error("Vehicle not found");
-    }
-
-    const vehicleServices = await queryClient.ensureQueryData(
-      vehicleServicesQueryOptions(vehicleId)
-    );
-
-    return {
-      ...selectedVehicle,
-      services: vehicleServices,
-    } as TVehicleWithServices;
-  },
 });
 
 function RouteComponent() {
-  const vehicle = Route.useLoaderData();
+  const { vehicleId } = Route.useParams();
+  const { data: vehicles, isLoading: isLoadingVehicles } =
+    useQuery(vehiclesQueryOptions);
+  const vehicle = vehicles?.find((v: TVehicle) => v.id === vehicleId);
+  const isLoading = isLoadingVehicles;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <Spinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading vehicle details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!vehicle) {
     return (

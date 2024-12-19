@@ -51,6 +51,12 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
             </span>{" "}
             {vehicle.plate}
           </p>
+          {nextService && (
+            <p className="font-outfit text-sm opacity-80 font-medium tracking-wide">
+              <span className="text-xs tracking-tight">Next Service:</span>{" "}
+              {nextService.toLocaleDateString()}
+            </p>
+          )}
         </div>
       </div>
     </div>
