@@ -93,6 +93,7 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
           <Input
             label="Make"
             ref={makeRef}
+            defaultValue={vehicle?.make}
             isRequired
             placeholder="e.g., Toyota"
             variant="bordered"
@@ -104,6 +105,7 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
           <Input
             label="Model"
             ref={modelRef}
+            defaultValue={vehicle?.model}
             isRequired
             placeholder="e.g., Camry"
             variant="bordered"
@@ -117,6 +119,7 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
           <Input
             label="Year"
             ref={yearRef}
+            defaultValue={vehicle?.year?.toString()}
             type="number"
             min={1900}
             max={new Date().getFullYear() + 1}
@@ -131,6 +134,7 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
           <Input
             label="Plate Number"
             ref={plateNumberRef}
+            defaultValue={vehicle?.plate}
             isRequired
             placeholder="e.g., ABC-123"
             variant="bordered"
