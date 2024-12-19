@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { collection, addDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../config/firebase";
+import { db } from "../config/firebase";
 import { TVehicle } from "../types/vehicle.type";
 import { vehiclesQueryOptions } from "./useFetchVehicles";
 import { queryClient } from "../lib/react-query";
 import { toast } from "react-toastify";
+import { uploadImage } from "../utils/uploadImage";
 
 interface AddVehicleData {
   make: string;
@@ -17,10 +17,15 @@ interface AddVehicleData {
 
 async function addVehicle(data: AddVehicleData) {
   let imageUrl = "";
+  
   if (data.imageFile) {
-    const storageRef = ref(storage, `vehicles/${data.imageFile.name}`);
-    const snapshot = await uploadBytes(storageRef, data.imageFile);
-    imageUrl = await getDownloadURL(snapshot.ref);
+    try {
+      const fileName = `${Date.now()}-${data.imageFile.name}`;
+      imageUrl = await uploadImage(data.imageFile, `vehicles/${fileName}`);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw new Error("Failed to upload vehicle image");
+    }
   }
 
   const vehicleData = {
@@ -49,8 +54,8 @@ export function useAddVehicle() {
         queryKey: vehiclesQueryOptions.queryKey,
       });
     },
-    onError: () => {
-      toast.error("Failed to add vehicle. Please try again.");
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to add vehicle");
     },
   });
 }

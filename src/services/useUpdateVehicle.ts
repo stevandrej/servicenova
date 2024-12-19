@@ -1,10 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { doc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import { TVehicle } from "../types/vehicle.type";
 import { vehiclesQueryOptions } from "./useFetchVehicles";
 import { toast } from "react-toastify";
+import { uploadImage } from "../utils/uploadImage";
+import { queryClient } from "../lib/react-query";
 
 interface UpdateVehicleData {
   id: string;
@@ -20,6 +22,7 @@ async function updateVehicle(data: UpdateVehicleData) {
   let imageUrl = data.currentImageUrl;
 
   if (data.imageFile) {
+    // Delete old image if exists
     if (data.currentImageUrl) {
       try {
         const oldImageRef = ref(storage, data.currentImageUrl);
@@ -29,9 +32,14 @@ async function updateVehicle(data: UpdateVehicleData) {
       }
     }
 
-    const storageRef = ref(storage, `vehicles/${data.imageFile.name}`);
-    const snapshot = await uploadBytes(storageRef, data.imageFile);
-    imageUrl = await getDownloadURL(snapshot.ref);
+    // Upload new image
+    try {
+      const fileName = `${Date.now()}-${data.imageFile.name}`;
+      imageUrl = await uploadImage(data.imageFile, `vehicles/${fileName}`);
+    } catch (error) {
+      console.error("Error uploading new image:", error);
+      throw new Error("Failed to upload vehicle image");
+    }
   }
 
   const vehicleData = {
@@ -52,8 +60,6 @@ async function updateVehicle(data: UpdateVehicleData) {
 }
 
 export function useUpdateVehicle() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: updateVehicle,
     onSuccess: () => {
@@ -62,8 +68,8 @@ export function useUpdateVehicle() {
         queryKey: vehiclesQueryOptions.queryKey,
       });
     },
-    onError: () => {
-      toast.error("Failed to update vehicle. Please try again.");
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update vehicle");
     },
   });
 } 

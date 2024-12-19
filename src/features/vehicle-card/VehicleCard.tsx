@@ -5,6 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@nextui-org/react";
 import { IconTrash } from "@tabler/icons-react";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
+import fallbackVehicleImage from "../../assets/default-vehicle.jpg";
 
 interface VehicleCardProps {
   vehicle: TVehicle;
@@ -24,7 +25,11 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
   };
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this vehicle? This action cannot be undone."
+      )
+    ) {
       deleteVehicle(vehicle.id);
     }
   };
@@ -50,16 +55,16 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
       {/* Image */}
       <div className="bg-neutral-200">
         <img
-          src={`https://images.unsplash.com/photo-1523998172836-07d4ac80b873?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
+          src={vehicle.imageUrl ?? fallbackVehicleImage}
           alt={`${vehicle.make} ${vehicle.model}`}
-          className="w-full h-full object-center object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Content */}
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-75%",
+          "p-4 bg-gradient-to-t from-75%",
           statusColorClasses
         )}
       >
