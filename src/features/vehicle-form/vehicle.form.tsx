@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useAddVehicle } from "../../services/useAddVehicle";
+import { useUpdateVehicle } from "../../services/useUpdateVehicle";
 import {
   Input,
   Button,
@@ -8,24 +9,37 @@ import {
   ModalFooter,
 } from "@nextui-org/react";
 import { IconCar } from "@tabler/icons-react";
+import { TVehicle } from "../../types/vehicle.type";
 
-interface AddVehicleFormProps {
+interface VehicleFormProps {
+  mode: "add" | "edit";
+  vehicle?: TVehicle;
   onSuccess?: () => void;
 }
 
-export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
+export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
   const makeRef = useRef<HTMLInputElement>(null);
   const modelRef = useRef<HTMLInputElement>(null);
   const yearRef = useRef<HTMLInputElement>(null);
   const plateNumberRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: addVehicle, isPending } = useAddVehicle();
+  const { mutate: addVehicle, isPending: isAdding } = useAddVehicle();
+  const { mutate: updateVehicle, isPending: isUpdating } = useUpdateVehicle();
+
+  useEffect(() => {
+    if (mode === "edit" && vehicle) {
+      if (makeRef.current) makeRef.current.value = vehicle.make;
+      if (modelRef.current) modelRef.current.value = vehicle.model;
+      if (yearRef.current) yearRef.current.value = vehicle.year.toString();
+      if (plateNumberRef.current) plateNumberRef.current.value = vehicle.plate;
+    }
+  }, [mode, vehicle]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const vehicleData = {
+    const formData = {
       make: makeRef.current?.value || "",
       model: modelRef.current?.value || "",
       year: Number(yearRef.current?.value) || 0,
@@ -33,22 +47,44 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
       imageFile: imageRef.current?.files?.[0],
     };
 
-    addVehicle(vehicleData, {
-      onSuccess: () => {
-        onSuccess?.();
-      },
-    });
+    if (mode === "add") {
+      addVehicle(formData, {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      });
+    } else {
+      updateVehicle(
+        {
+          ...formData,
+          id: vehicle!.id,
+          currentImageUrl: vehicle!.imageUrl,
+        },
+        {
+          onSuccess: () => {
+            onSuccess?.();
+          },
+        }
+      );
+    }
   };
+
+  const isPending = mode === "add" ? isAdding : isUpdating;
+  const title = mode === "add" ? "Add New Vehicle" : "Edit Vehicle";
+  const description = mode === "add" 
+    ? "Enter your vehicle details below"
+    : "Update your vehicle details below";
+  const submitText = mode === "add" 
+    ? isPending ? "Adding Vehicle..." : "Add Vehicle"
+    : isPending ? "Updating Vehicle..." : "Update Vehicle";
 
   return (
     <form onSubmit={handleSubmit}>
       <ModalHeader className="flex gap-3">
         <IconCar className="text-primary w-8 h-8" />
         <div>
-          <p className="text-xl font-semibold">Add New Vehicle</p>
-          <p className="text-small text-default-500">
-            Enter your vehicle details below
-          </p>
+          <p className="text-xl font-semibold">{title}</p>
+          <p className="text-small text-default-500">{description}</p>
         </div>
       </ModalHeader>
 
@@ -104,9 +140,19 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
             }}
           />
         </div>
+        {mode === "edit" && vehicle?.imageUrl && (
+          <div className="mb-2">
+            <p className="text-sm text-gray-500 mb-2">Current Image:</p>
+            <img
+              src={vehicle.imageUrl}
+              alt="Current vehicle"
+              className="w-full max-w-[200px] h-auto rounded-lg"
+            />
+          </div>
+        )}
         <Input
           type="file"
-          label="Vehicle Image"
+          label={mode === "add" ? "Vehicle Image" : "Update Vehicle Image"}
           ref={imageRef}
           accept="image/*"
           variant="bordered"
@@ -114,7 +160,11 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
           classNames={{
             label: "font-medium",
           }}
-          description="Upload a clear photo of your vehicle"
+          description={
+            mode === "add"
+              ? "Upload a clear photo of your vehicle"
+              : "Upload a new photo of your vehicle (optional)"
+          }
         />
       </ModalBody>
 
@@ -128,7 +178,7 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
           color="primary"
           className="font-medium"
         >
-          {isPending ? "Adding Vehicle..." : "Add Vehicle"}
+          {submitText}
         </Button>
       </ModalFooter>
     </form>

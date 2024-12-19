@@ -1,15 +1,16 @@
 import { useMemo, useState, useCallback } from "react";
-import type { TVehicleWithServices } from "../../types/vehicle.type";
-import { formatDateToLongDate } from "../../utils/formatDate";
-import { Timeline } from "../../components/timeline/Timeline";
-import { ServiceItem } from "./ServiceItem";
-import { Button, useDisclosure } from "@nextui-org/react";
-import { IconPlus, IconArrowLeft, IconTrash } from "@tabler/icons-react";
-import { ServiceFormModal } from "./ServiceFormModal";
-import { TService } from "../../types/service.type";
-import { VehicleMetricCard } from "./VehicleMetricCard";
+import { useDisclosure } from "@nextui-org/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
+import { TVehicleWithServices } from "../../types/vehicle.type";
+import { TService } from "../../types/service.type";
+import { formatDateToLongDate } from "../../utils/formatDate";
+import { ServiceFormModal } from "./ServiceFormModal";
+import { VehicleHeader } from "./components/VehicleHeader";
+import { VehicleInfo } from "./components/VehicleInfo";
+import { ServiceHistory } from "./components/ServiceHistory";
+import { ServiceItem } from "./ServiceItem";
+import { VehicleFormModal } from "./VehicleFormModal";
 
 interface VehicleDetailsProps {
   vehicle: TVehicleWithServices;
@@ -17,172 +18,93 @@ interface VehicleDetailsProps {
 
 export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { 
+    isOpen: isEditModalOpen, 
+    onOpen: onOpenEditModal, 
+    onClose: onCloseEditModal 
+  } = useDisclosure();
   const [selectedService, setSelectedService] = useState<TService | null>(null);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const navigate = useNavigate();
   const { mutate: deleteVehicle, isPending: isDeleting } = useDeleteVehicle();
 
-  const handleAddService = () => {
+  const handleAddService = useCallback(() => {
     setSelectedService(null);
     setMode("add");
     onOpen();
-  };
+  }, [onOpen]);
 
-  const handleEditService = useCallback(
-    (service: TService) => {
-      setSelectedService(service);
-      setMode("edit");
-      onOpen();
-    },
-    [onOpen]
-  );
+  const handleEditService = useCallback((service: TService) => {
+    setSelectedService(service);
+    setMode("edit");
+    onOpen();
+  }, [onOpen]);
 
-  const sortedServices = useMemo(
-    () =>
-      [...vehicle.services].sort((a, b) => b.date.getTime() - a.date.getTime()),
-    [vehicle.services]
-  );
-
-  const timelineData = sortedServices.map((service) => ({
-    title: formatDateToLongDate(service.date),
-    content: (
-      <ServiceItem
-        vehicleId={vehicle.id}
-        service={service}
-        onEdit={() => handleEditService(service)}
-      />
-    ),
-  }));
-
-  const totalSpent = useMemo(
-    () => vehicle.services.reduce((acc, service) => acc + service.price, 0),
-    [vehicle.services]
-  );
-
-  const lastServiceDate = useMemo(
-    () => sortedServices[0]?.date || null,
-    [sortedServices]
-  );
-
-  const currentMileage = useMemo(
-    () => Math.max(...vehicle.services.map((s) => s.mileage), 0),
-    [vehicle.services]
-  );
-
-  const handleDeleteVehicle = () => {
-    if (
-      confirm(
-        "Are you sure you want to delete this vehicle? This action cannot be undone."
-      )
-    ) {
+  const handleDeleteVehicle = useCallback(() => {
+    if (confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) {
       deleteVehicle(vehicle.id, {
         onSuccess: () => {
           navigate({ to: "/vehicles" });
         },
       });
     }
-  };
+  }, [deleteVehicle, vehicle.id, navigate]);
+
+  const sortedServices = useMemo(() => 
+    [...vehicle.services].sort((a, b) => b.date.getTime() - a.date.getTime()),
+    [vehicle.services]
+  );
+
+  const timelineData = useMemo(() => 
+    sortedServices.map((service) => ({
+      title: formatDateToLongDate(service.date),
+      content: (
+        <ServiceItem
+          vehicleId={vehicle.id}
+          service={service}
+          onEdit={() => handleEditService(service)}
+        />
+      ),
+    })),
+    [sortedServices, vehicle.id, handleEditService]
+  );
+
+  const totalSpent = useMemo(() => 
+    vehicle.services.reduce((acc, service) => acc + service.price, 0),
+    [vehicle.services]
+  );
+
+  const lastServiceDate = useMemo(() => 
+    sortedServices[0]?.date || null,
+    [sortedServices]
+  );
+
+  const currentMileage = useMemo(() => 
+    Math.max(...vehicle.services.map((s) => s.mileage), 0),
+    [vehicle.services]
+  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <Button
-          variant="light"
-          startContent={<IconArrowLeft size={18} />}
-          onPress={() => navigate({ to: "/vehicles" })}
-          className="mb-2"
-        >
-          Back to Vehicles
-        </Button>
-        <Button
-          color="danger"
-          variant="light"
-          isLoading={isDeleting}
-          startContent={<IconTrash size={18} />}
-          onPress={handleDeleteVehicle}
-        >
-          Delete Vehicle
-        </Button>
-      </div>
+      <VehicleHeader
+        onEdit={onOpenEditModal}
+        onDelete={handleDeleteVehicle}
+        isDeleting={isDeleting}
+      />
 
-      {/* Vehicle Header */}
-      <div className="p-6 bg-white rounded-lg shadow-sm border">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-2xl font-semibold">
-              {vehicle.make} {vehicle.model}
-            </h1>
-            <p className="text-gray-500">
-              {vehicle.year} • {vehicle.plate}
-            </p>
-          </div>
-          <Button
-            color="primary"
-            endContent={<IconPlus size={18} />}
-            onPress={handleAddService}
-          >
-            Add Service
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-4">
-          <VehicleMetricCard
-            title="Next Service Due"
-            value={
-              vehicle.nextServiceDate
-                ? formatDateToLongDate(vehicle.nextServiceDate)
-                : "Not scheduled"
-            }
-          />
-          <VehicleMetricCard
-            title="Last Service"
-            value={
-              lastServiceDate
-                ? formatDateToLongDate(lastServiceDate)
-                : "No services"
-            }
-            description={
-              lastServiceDate
-                ? `${sortedServices[0]?.serviceType}`
-                : "No service history"
-            }
-          />
-          <VehicleMetricCard
-            title="Total Services"
-            value={vehicle.services.length.toString()}
-          />
-          <VehicleMetricCard
-            title="Total Spent"
-            value={`$${totalSpent.toLocaleString()}`}
-          />
-          <VehicleMetricCard
-            title="Current Mileage"
-            value={`${currentMileage.toLocaleString()}`}
-            description="Kilometers"
-          />
-        </div>
-      </div>
+      <VehicleInfo
+        vehicle={vehicle}
+        onAddService={handleAddService}
+        lastServiceDate={lastServiceDate}
+        totalSpent={totalSpent}
+        currentMileage={currentMileage}
+      />
 
-      {/* Service Timeline */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-xl font-semibold mb-6">Service History</h2>
-        {timelineData.length > 0 ? (
-          <Timeline data={timelineData} />
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            <p>No service records found</p>
-            <Button
-              color="primary"
-              variant="light"
-              onPress={handleAddService}
-              className="mt-2"
-            >
-              Add First Service Record
-            </Button>
-          </div>
-        )}
-      </div>
+      <ServiceHistory
+        timelineData={timelineData}
+        onAddService={handleAddService}
+      />
 
-      {/* Service Modal */}
       <ServiceFormModal
         isOpen={isOpen}
         onClose={onClose}
@@ -190,6 +112,13 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
         service={selectedService}
         vehicleId={vehicle.id}
         nextService={vehicle.nextServiceDate}
+      />
+
+      <VehicleFormModal
+        isOpen={isEditModalOpen}
+        onClose={onCloseEditModal}
+        vehicle={vehicle}
+        mode="edit"
       />
     </div>
   );

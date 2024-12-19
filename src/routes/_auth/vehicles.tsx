@@ -2,17 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
 import { VehicleCard } from "../../features/vehicle-card/VehicleCard";
 import { cn } from "../../lib/utils";
-import { Button, Modal, ModalContent, Spinner, useDisclosure } from "@nextui-org/react";
+import { Button, Spinner, useDisclosure } from "@nextui-org/react";
 import { IconPlus } from "@tabler/icons-react";
-import { AddVehicleForm } from "../../features/add-vehicle-form/add-vehicle.form";
 import { useQuery } from "@tanstack/react-query";
+import { VehicleFormModal } from "../../features/vehicle-details/VehicleFormModal";
 
 export const Route = createFileRoute("/_auth/vehicles")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: vehicles, isLoading: isLoadingVehicles } = useQuery(vehiclesQueryOptions);
+  const { data: vehicles, isLoading: isLoadingVehicles } =
+    useQuery(vehiclesQueryOptions);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   if (isLoadingVehicles) {
@@ -45,10 +46,12 @@ function RouteComponent() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">My Vehicles</h1>
-          <p className="text-gray-500">Manage and track your vehicle services</p>
+          <p className="text-gray-500">
+            Manage and track your vehicle services
+          </p>
         </div>
-        <Button 
-          color="primary" 
+        <Button
+          color="primary"
           endContent={<IconPlus size={20} />}
           onPress={onOpen}
         >
@@ -59,25 +62,28 @@ function RouteComponent() {
       {/* Grid of Vehicles */}
       {vehicles.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg">
-          <img 
+          <img
             src="/empty-garage.svg"
             alt="No vehicles"
             className="w-48 h-48 mb-4 opacity-50"
           />
-          <h3 className="text-xl font-semibold text-gray-700">No vehicles yet</h3>
-          <p className="text-gray-500 mb-4">Add your first vehicle to get started</p>
-          <Button 
-            color="primary"
-            onPress={onOpen}
-          >
+          <h3 className="text-xl font-semibold text-gray-700">
+            No vehicles yet
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Add your first vehicle to get started
+          </p>
+          <Button color="primary" onPress={onOpen}>
             Add Your First Vehicle
           </Button>
         </div>
       ) : (
-        <div className={cn(
-          "grid gap-6",
-          "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        )}>
+        <div
+          className={cn(
+            "grid gap-6",
+            "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          )}
+        >
           {vehicles.map((vehicle) => (
             <VehicleCard
               key={vehicle.id}
@@ -88,19 +94,12 @@ function RouteComponent() {
         </div>
       )}
 
-      {/* Add Vehicle Modal */}
-      <Modal 
-        isOpen={isOpen} 
+      <VehicleFormModal
+        isOpen={isOpen}
         onClose={onClose}
-        size="2xl"
-        scrollBehavior="outside"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <AddVehicleForm onSuccess={onClose} />
-          )}
-        </ModalContent>
-      </Modal>
+        mode="add"
+        vehicle={undefined}
+      />
     </div>
   );
 }

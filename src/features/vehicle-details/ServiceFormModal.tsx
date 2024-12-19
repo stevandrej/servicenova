@@ -145,14 +145,6 @@ export const ServiceFormModal = ({
                 variant="bordered"
                 labelPlacement="outside"
               />
-              <DatePicker
-                label="Next Service Date"
-                value={nextServiceDate}
-                onChange={(newDate) => newDate && setNextServiceDate(newDate)}
-                variant="bordered"
-                labelPlacement="outside"
-                description="When should a service be performed again?"
-              />
               <Textarea
                 label="Notes"
                 isRequired
@@ -160,6 +152,14 @@ export const ServiceFormModal = ({
                 defaultValue={service?.notes}
                 variant="bordered"
                 labelPlacement="outside"
+              />
+              <DatePicker
+                label="Next Service Date"
+                value={nextServiceDate}
+                onChange={(newDate) => newDate && setNextServiceDate(newDate)}
+                variant="bordered"
+                labelPlacement="outside"
+                description="When should a service be performed again?"
               />
             </ModalBody>
             <ModalFooter>
