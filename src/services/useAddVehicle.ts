@@ -21,7 +21,7 @@ async function addVehicle(data: AddVehicleData) {
   if (data.imageFile) {
     try {
       const fileName = `${Date.now()}-${data.imageFile.name}`;
-      imageUrl = await uploadImage(data.imageFile, `vehicles/${fileName}`);
+      imageUrl = await uploadImage(data.imageFile, `images/${fileName}`);
     } catch (error) {
       console.error("Error uploading image:", error);
       throw new Error("Failed to upload vehicle image");

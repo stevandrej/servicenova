@@ -35,7 +35,7 @@ async function updateVehicle(data: UpdateVehicleData) {
     // Upload new image
     try {
       const fileName = `${Date.now()}-${data.imageFile.name}`;
-      imageUrl = await uploadImage(data.imageFile, `vehicles/${fileName}`);
+      imageUrl = await uploadImage(data.imageFile, `images/${fileName}`);
     } catch (error) {
       console.error("Error uploading new image:", error);
       throw new Error("Failed to upload vehicle image");
