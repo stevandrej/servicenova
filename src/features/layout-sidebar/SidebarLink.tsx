@@ -14,8 +14,11 @@ export const SidebarLink = ({
   className?: string;
   props?: HTMLAttributes<HTMLAnchorElement>;
 }) => {
-  const { open, animate } = useSidebar();
+  const { open, setOpen, animate } = useSidebar();
   const handleClick = () => {
+    if (window.innerWidth < 768) {
+      setOpen(false);
+    }
     link.action?.();
   };
 
