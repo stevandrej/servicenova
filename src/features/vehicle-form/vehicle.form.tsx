@@ -36,19 +36,19 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
     }
   }, [mode, vehicle]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = {
-      make: makeRef.current?.value || "",
-      model: modelRef.current?.value || "",
+      make: makeRef.current?.value ?? "",
+      model: modelRef.current?.value ?? "",
       year: Number(yearRef.current?.value) || 0,
-      plate: plateNumberRef.current?.value || "",
+      plate: plateNumberRef.current?.value ?? "",
       imageFile: imageRef.current?.files?.[0],
     };
 
     if (mode === "add") {
-      addVehicle(formData, {
+        addVehicle(formData, {
         onSuccess: () => {
           onSuccess?.();
         },
