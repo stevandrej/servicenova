@@ -100,7 +100,7 @@ export const ServiceFormModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl" placement="center">
       <ModalContent>
         {(onClose) => (
           <form onSubmit={handleSubmit}>
@@ -110,6 +110,7 @@ export const ServiceFormModal = ({
             <ModalBody className="gap-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <DatePicker
+                  autoFocus
                   label="Service Date"
                   value={date}
                   onChange={(newDate) => newDate && setDate(newDate)}

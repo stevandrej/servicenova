@@ -16,7 +16,7 @@ export const VehicleFormModal = ({
   mode,
 }: VehicleFormModalProps) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="outside">
+    <Modal isOpen={isOpen} onClose={onClose} size="2xl" placement="center">
       <ModalContent>
         {(onClose) => (
           <VehicleForm mode={mode} vehicle={vehicle} onSuccess={onClose} />
