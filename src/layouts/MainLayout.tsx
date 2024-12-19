@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import { Sidebar } from "../features/layout-sidebar/Sidebar";
-import { ToastContainer } from "react-toastify";
 import { cn } from "../lib/utils";
 
 interface MainLayoutProps {
@@ -28,7 +27,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </div>
       </div>
-      <ToastContainer theme="dark" position="top-right" />
     </>
   );
 };

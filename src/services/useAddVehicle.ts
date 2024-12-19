@@ -5,6 +5,7 @@ import { db, storage } from "../config/firebase";
 import { TVehicle } from "../types/vehicle.type";
 import { vehiclesQueryOptions } from "./useFetchVehicles";
 import { queryClient } from "../lib/react-query";
+import { toast } from "react-toastify";
 
 interface AddVehicleData {
   make: string;
@@ -43,9 +44,13 @@ export function useAddVehicle() {
   return useMutation({
     mutationFn: addVehicle,
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      toast.success("Vehicle added successfully");
+      queryClient.refetchQueries({
         queryKey: vehiclesQueryOptions.queryKey,
       });
+    },
+    onError: () => {
+      toast.error("Failed to add vehicle. Please try again.");
     },
   });
 }

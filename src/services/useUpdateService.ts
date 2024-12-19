@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { TService } from "../types/service.type";
+import { toast } from "react-toastify";
 
 interface UpdateServiceParams {
   vehicleId: string;
@@ -24,9 +25,13 @@ export function useUpdateService() {
       return { ...service };
     },
     onSuccess: () => {
+      toast.success("Service record updated successfully");
       queryClient.refetchQueries({
         queryKey: ["vehicles"],
       });
+    },
+    onError: () => {
+      toast.error("Failed to update service record. Please try again.");
     },
   });
 }

@@ -1,7 +1,12 @@
 import { useRef } from "react";
-import { toast } from "react-toastify";
 import { useAddVehicle } from "../../services/useAddVehicle";
-import { Input, Button, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import {
+  Input,
+  Button,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@nextui-org/react";
 import { IconCar } from "@tabler/icons-react";
 
 interface AddVehicleFormProps {
@@ -30,12 +35,7 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
 
     addVehicle(vehicleData, {
       onSuccess: () => {
-        toast.success("Vehicle added successfully!");
         onSuccess?.();
-      },
-      onError: (error) => {
-        console.error("Error adding vehicle:", error);
-        toast.error("Failed to add vehicle. Please try again.");
       },
     });
   };
@@ -51,7 +51,7 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
           </p>
         </div>
       </ModalHeader>
-      
+
       <ModalBody className="gap-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -117,12 +117,9 @@ export const AddVehicleForm = ({ onSuccess }: AddVehicleFormProps) => {
           description="Upload a clear photo of your vehicle"
         />
       </ModalBody>
-      
+
       <ModalFooter>
-        <Button
-          variant="light" 
-          onPress={onSuccess}
-        >
+        <Button variant="light" onPress={onSuccess}>
           Cancel
         </Button>
         <Button

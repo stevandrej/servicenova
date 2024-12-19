@@ -10,6 +10,7 @@ import { db } from "../config/firebase";
 import { TService } from "../types/service.type";
 import { TVehicleWithServices } from "../types/vehicle.type";
 import { firebaseTimestampToDate } from "../utils/formatDate";
+import { toast } from "react-toastify";
 
 interface AddServiceParams {
   vehicleId: string;
@@ -35,6 +36,8 @@ export function useAddService() {
       return { id: serviceRef.id, ...service };
     },
     onSuccess: (newService, { vehicleId }) => {
+      toast.success("Service record added successfully");
+
       queryClient.setQueryData<TVehicleWithServices[]>(
         ["vehicles"],
         (oldData) => {
@@ -43,7 +46,7 @@ export function useAddService() {
             if (vehicle.id === vehicleId) {
               return {
                 ...vehicle,
-                nextServiceDate: newService.nextServiceDate 
+                nextServiceDate: newService.nextServiceDate
                   ? firebaseTimestampToDate(newService.nextServiceDate)
                   : null,
                 services: [
@@ -63,6 +66,9 @@ export function useAddService() {
           });
         }
       );
+    },
+    onError: () => {
+      toast.error("Failed to add service record. Please try again.");
     },
   });
 }

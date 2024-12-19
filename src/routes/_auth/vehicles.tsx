@@ -2,19 +2,42 @@ import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
 import { VehicleCard } from "../../features/vehicle-card/VehicleCard";
 import { cn } from "../../lib/utils";
-import { Button, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalContent, Spinner, useDisclosure } from "@nextui-org/react";
 import { IconPlus } from "@tabler/icons-react";
 import { AddVehicleForm } from "../../features/add-vehicle-form/add-vehicle.form";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_auth/vehicles")({
-  loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(vehiclesQueryOptions),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const vehicles = Route.useLoaderData();
+  const { data: vehicles, isLoading: isLoadingVehicles } = useQuery(vehiclesQueryOptions);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  if (isLoadingVehicles) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <Spinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading vehicles ...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!vehicles) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">No vehicles found</h2>
+          <p className="text-gray-600">
+            There are no vehicles in your account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

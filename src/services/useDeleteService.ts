@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { TVehicleWithServices } from "../types/vehicle.type";
+import { toast } from "react-toastify";
 
 export function useDeleteService() {
   const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ export function useDeleteService() {
       return serviceId;
     },
     onSuccess: (_, { vehicleId, serviceId }) => {
+      toast.success("Service record deleted successfully");
       queryClient.setQueryData<TVehicleWithServices[]>(
         ["vehicles"],
         (oldData) => {
@@ -36,6 +38,9 @@ export function useDeleteService() {
           });
         }
       );
+    },
+    onError: () => {
+      toast.error("Failed to delete service record. Please try again.");
     },
   });
 }
