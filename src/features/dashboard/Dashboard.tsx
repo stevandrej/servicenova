@@ -17,8 +17,8 @@ export const Dashboard = () => {
   const dashboardMetrics = useMemo(() => {
     const allServices = vehicles.flatMap((v) => v.services || []);
     const totalSpent = allServices.reduce((acc, s) => acc + (s.price || 0), 0);
-    const upcomingServices = allServices.filter(
-      (s) => s.nextServiceDate && new Date(s.nextServiceDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    const upcomingServices = vehicles.filter(
+      (v) => v.nextServiceDate && new Date(v.nextServiceDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     );
 
     return {
