@@ -12,7 +12,7 @@ export const VehicleHeader = ({ onEdit, onDelete, isDeleting }: VehicleHeaderPro
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center flex-wrap">
       <Button
         variant="light"
         startContent={<IconArrowLeft size={18} />}
@@ -21,7 +21,7 @@ export const VehicleHeader = ({ onEdit, onDelete, isDeleting }: VehicleHeaderPro
       >
         Back to Vehicles
       </Button>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-1 md:justify-end justify-between">
         <Button
           color="primary"
           variant="light"
