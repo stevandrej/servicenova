@@ -44,7 +44,7 @@ export const Dashboard = () => {
         const hasUpcomingService = v.nextServiceDate && 
           new Date(v.nextServiceDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         
-        return daysSinceLastService > 180 || hasUpcomingService; // More than 6 months or service due within a month
+        return daysSinceLastService > 320 || hasUpcomingService; // More than 10 months or service due within a month
       })
       .slice(0, 3); // Show top 3
   }, [vehicles]);
