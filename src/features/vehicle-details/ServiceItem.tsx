@@ -46,7 +46,7 @@ export const ServiceItem = memo(
         </div>
         <div className="flex justify-between items-center mb-3">
           <p className="text-sm text-gray-600">{service.notes}</p>
-          <p className="font-semibold">${service.price.toLocaleString()}</p>
+          <p className="font-semibold">{service.price.toLocaleString()} <span className="text-xs">MKD</span></p>
         </div>
       </div>
     );

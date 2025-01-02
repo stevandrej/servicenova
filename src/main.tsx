@@ -30,7 +30,7 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <NextUIProvider>
+        <NextUIProvider locale="en-GB">
           <RouterProvider router={router} />
           <ReactQueryDevtools initialIsOpen={false} />
         </NextUIProvider>

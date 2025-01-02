@@ -62,7 +62,7 @@ export const VehicleInfo = ({
         />
         <VehicleMetricCard
           title="Total Spent"
-          value={`$${totalSpent.toLocaleString()}`}
+          value={`${totalSpent.toLocaleString()} MKD`}
         />
         <VehicleMetricCard
           title="Current Mileage"
