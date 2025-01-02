@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
-import { Dashboard } from "../../features/dashboard/Dashboard";
+import { Dashboard } from "../../features/dashboard/dashboard";
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	loader: ({ context: { queryClient } }) =>
