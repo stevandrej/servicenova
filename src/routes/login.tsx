@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LoginPage } from "../features/auth/LoginPage";
+import { LoginPage } from "../features/auth/login.page";
 import { auth } from "../config/firebase";
 
 export const Route = createFileRoute("/login")({

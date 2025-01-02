@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { MainLayout } from "../layouts/MainLayout";
+import { MainLayout } from "../layouts/main.layout";
 import { authQueryOptions } from "../stores/auth.store";
 
 export const Route = createFileRoute("/_auth")({

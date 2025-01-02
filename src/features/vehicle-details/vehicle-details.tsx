@@ -5,12 +5,12 @@ import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 import { TVehicleWithServices } from "../../types/vehicle.type";
 import { TService } from "../../types/service.type";
 import { formatDateToLongDate } from "../../utils/formatDate";
-import { ServiceFormModal } from "./ServiceFormModal";
-import { VehicleHeader } from "./components/VehicleHeader";
-import { VehicleInfo } from "./components/VehicleInfo";
-import { ServiceHistory } from "./components/ServiceHistory";
-import { ServiceItem } from "./ServiceItem";
-import { VehicleFormModal } from "./VehicleFormModal";
+import { ServiceFormModal } from "./service-form-modal";
+import { VehicleHeader } from "./components/vehicle-header";
+import { VehicleInfo } from "./components/vehicle-info";
+import { ServiceHistory } from "./components/service-history";
+import { ServiceItem } from "./service-item";
+import { VehicleFormModal } from "./vehicle-form-modal";
 
 interface VehicleDetailsProps {
   vehicle: TVehicleWithServices;

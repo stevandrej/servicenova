@@ -2,7 +2,7 @@ import { HTMLAttributes } from "react";
 import { useSidebar } from "./useSidebar";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import { Links } from "./sidebarLink.type";
+import { Links } from "./sidebar-link.type";
 import { Link } from "@tanstack/react-router";
 
 export const SidebarLink = ({

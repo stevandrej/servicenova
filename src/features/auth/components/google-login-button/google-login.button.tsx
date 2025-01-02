@@ -1,7 +1,7 @@
 import { authService } from "../../../../services/auth.service";
 import { useAuthStore } from "../../../../stores/auth.store";
 import { useNavigate } from "@tanstack/react-router";
-import "./GoogleLoginButton.style.css";
+import "./google-login.button.style.css";
 import { toast } from "react-toastify";
 
 export const GoogleLoginButton = () => {

@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../services/useFetchVehicles";
-import { VehicleCard } from "../../features/vehicle-card/VehicleCard";
+import { VehicleCard } from "../../features/vehicle-card/vehicle-card";
 import { cn } from "../../lib/utils";
 import { Button, Spinner, useDisclosure } from "@nextui-org/react";
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { VehicleFormModal } from "../../features/vehicle-details/VehicleFormModal";
+import { VehicleFormModal } from "../../features/vehicle-details/vehicle-form-modal";
 
 export const Route = createFileRoute("/_auth/vehicles")({
   component: RouteComponent,

@@ -1,5 +1,5 @@
-import { Sparkles } from "../../components/sparkles/Sparkles";
-import { GoogleLoginButton } from "./components/GoogleLoginButton/GoogleLoginButton";
+import { Sparkles } from "../../components/sparkles/sparkles";
+import { GoogleLoginButton } from "./components/google-login-button/google-login.button";
 
 export const LoginPage = () => {
   return (

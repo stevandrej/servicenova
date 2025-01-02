@@ -4,7 +4,7 @@ import {
 	IconReceipt,
 	IconTools,
 } from "@tabler/icons-react";
-import { VehicleMetricCard } from "../../vehicle-details/VehicleMetricCard";
+import { VehicleMetricCard } from "../../vehicle-details/vehicle-metric-card";
 import { useMemo } from "react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, ReactNode } from "react";
-import { SparklesCore } from "./SparklesCore";
+import { SparklesCore } from "./sparkles.core";
 
 interface SparklesProps {
   title: string;

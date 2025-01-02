@@ -4,7 +4,7 @@ import {
   IconDashboard,
 } from "@tabler/icons-react";
 import { useAuth } from "../../hooks/useAuth";
-import { Links } from "./sidebarLink.type";
+import { Links } from "./sidebar-link.type";
 
 export const useSidebarLinks = (): Links[] => {
   const { logout } = useAuth();

@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import { SidebarProvider } from "./SidebarProvider";
-import { SidebarLink } from "./SidebarLink";
+import { SidebarProvider } from "./sidebar.provider";
+import { SidebarLink } from "./sidebar-link";
 import { useSidebarLinks } from "./useSidebarLinks.data";
-import { SidebarBody } from "./SidebarBody";
+import { SidebarBody } from "./sidebar-body";
 import { useAuth } from "../../hooks/useAuth";
 
 export const Sidebar = ({

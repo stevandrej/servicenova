@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { Sidebar } from "../features/layout-sidebar/Sidebar";
+import { Sidebar } from "../features/layout-sidebar/sidebar";
 import { cn } from "../lib/utils";
 
 interface MainLayoutProps {

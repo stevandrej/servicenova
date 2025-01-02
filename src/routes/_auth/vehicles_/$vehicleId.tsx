@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { vehiclesQueryOptions } from "../../../services/useFetchVehicles";
 import { Link } from "@tanstack/react-router";
 import { TVehicle } from "../../../types/vehicle.type";
-import { VehicleDetails } from "../../../features/vehicle-details/VehicleDetails";
+import { VehicleDetails } from "../../../features/vehicle-details/vehicle-details";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@nextui-org/react";
 

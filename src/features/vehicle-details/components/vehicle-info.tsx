@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 import { IconPlus } from "@tabler/icons-react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
-import { VehicleMetricCard } from "../VehicleMetricCard";
+import { VehicleMetricCard } from "../vehicle-metric-card";
 import { formatDateToLongDate } from "../../../utils/formatDate";
 
 interface VehicleInfoProps {
