@@ -40,7 +40,10 @@ export default function MonthlySpendingChart({
 							<div key={item.month} className="space-y-2">
 								<div className="flex justify-between text-sm">
 									<span>{item.month}</span>
-									<span>${item.amount.toLocaleString()}</span>
+									<span>
+										{item.amount.toLocaleString()}{" "}
+										<span className="text-xs">MKD</span>
+									</span>
 								</div>
 								<Progress
 									value={item.amount}
