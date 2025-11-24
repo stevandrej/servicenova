@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Sidebar } from "../features/layout-sidebar/sidebar";
 import { cn } from "../lib/utils";
+import { ReloadPrompt } from "../components/ReloadPrompt";
 
 interface MainLayoutProps {
 	children: ReactNode;
@@ -27,6 +28,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 					{children}
 				</div>
 			</div>
+			<ReloadPrompt />
 		</>
 	);
 };

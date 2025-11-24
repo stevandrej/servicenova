@@ -10,7 +10,7 @@ export default defineConfig({
 		react(),
 		TanStackRouterVite(),
 		VitePWA({
-			registerType: 'autoUpdate',
+			registerType: 'prompt',
 			includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
 			manifest: {
 				name: 'Service Nova',
@@ -35,6 +35,11 @@ export default defineConfig({
 						purpose: 'any maskable'
 					}
 				]
+			},
+			workbox: {
+				cleanupOutdatedCaches: true,
+				clientsClaim: true,
+				skipWaiting: true
 			}
 		})
 	],
