@@ -14,7 +14,7 @@ export const Route = createFileRoute("/login")({
     const user = auth.currentUser;
     if (user) {
       throw redirect({
-        to: "/dashboard",
+        to: "/vehicles",
       });
     }
   },

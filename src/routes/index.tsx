@@ -5,7 +5,7 @@ export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const user = auth.currentUser;
     throw redirect({
-      to: user ? "/dashboard" : "/login",
+      to: user ? "/vehicles" : "/login",
     });
   },
 });
