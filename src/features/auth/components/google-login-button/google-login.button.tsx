@@ -13,7 +13,7 @@ export const GoogleLoginButton = () => {
     try {
       await authService.signInWithGoogle();
       invalidateAuth();
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/vehicles" });
     } catch {
       toast.error("Login failed");
     }
