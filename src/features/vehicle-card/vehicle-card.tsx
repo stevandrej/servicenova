@@ -6,6 +6,8 @@ import { Button } from "@nextui-org/react";
 import { IconTrash } from "@tabler/icons-react";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 import fallbackVehicleImage from "../../assets/no-image.jpg";
+import { AddToCalendar } from "../../components/add-to-calendar";
+import { formatDate } from "../../utils/formatDate";
 
 interface VehicleCardProps {
   vehicle: TVehicle;
@@ -79,10 +81,15 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
             {vehicle.plate}
           </p>
           {nextService && (
-            <p className="font-outfit text-sm opacity-80 font-medium tracking-wide">
-              <span className="text-xs tracking-tight">Next Service:</span>{" "}
-              {nextService.toLocaleDateString()}
-            </p>
+            <div className="flex flex-row items-center justify-between gap-2">
+              <p className="font-outfit text-sm opacity-80 font-medium tracking-wide">
+                <span className="text-xs tracking-tight">Next Service:</span>{" "}
+                {formatDate(nextService)}
+              </p>
+              <div onClick={(e) => e.stopPropagation()}>
+                <AddToCalendar date={nextService} vehicleMake={vehicle.make} vehicleModel={vehicle.model} />
+              </div>
+            </div>
           )}
         </div>
       </div>

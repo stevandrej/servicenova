@@ -5,13 +5,15 @@ interface VehicleMetricCardProps {
   value: string;
   description?: string;
   icon?: React.ReactNode;
+  action?: React.ReactNode;
 }
 
 export const VehicleMetricCard = memo(({ 
   title, 
   value, 
   description,
-  icon
+  icon,
+  action
 }: VehicleMetricCardProps) => (
   <div className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
     <div className="flex flex-col gap-1">
@@ -22,6 +24,11 @@ export const VehicleMetricCard = memo(({
       <p className="text-lg font-semibold">{value}</p>
       {description && (
         <p className="text-xs text-gray-500">{description}</p>
+      )}
+      {action && (
+        <div className="mt-2">
+          {action}
+        </div>
       )}
     </div>
   </div>

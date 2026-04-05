@@ -2,6 +2,7 @@ import { Card, CardHeader } from "@nextui-org/react";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { formatDate } from "../../../utils/formatDate";
 
 export default function VehiclesNeedAttention({
 	vehicles,
@@ -47,9 +48,9 @@ export default function VehiclesNeedAttention({
 								<p className="text-small text-default-500">
 									Last service:{" "}
 									{vehicle.services?.[0]
-										? new Date(
+										? formatDate(new Date(
 												vehicle.services[0].date
-										  ).toLocaleDateString()
+										  ))
 										: "Never"}
 								</p>
 							</div>

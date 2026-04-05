@@ -3,6 +3,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
 import { VehicleMetricCard } from "../vehicle-metric-card";
 import { formatDateToLongDate } from "../../../utils/formatDate";
+import { AddToCalendar } from "../../../components/add-to-calendar";
 
 interface VehicleInfoProps {
   vehicle: TVehicleWithServices;
@@ -45,6 +46,15 @@ export const VehicleInfo = ({
             vehicle.nextServiceDate
               ? formatDateToLongDate(vehicle.nextServiceDate)
               : "Not scheduled"
+          }
+          action={
+            vehicle.nextServiceDate ? (
+              <AddToCalendar 
+                date={vehicle.nextServiceDate} 
+                vehicleMake={vehicle.make} 
+                vehicleModel={vehicle.model} 
+              />
+            ) : undefined
           }
         />
         <VehicleMetricCard
