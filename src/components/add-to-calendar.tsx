@@ -58,23 +58,26 @@ export const AddToCalendar = ({ date, vehicleMake, vehicleModel }: AddToCalendar
           variant="flat" 
           color="primary" 
           startContent={<IconCalendarPlus size={16} />}
-          onClick={(e) => e.stopPropagation()} // Prevent triggering parent onClick
         >
           Add to Calendar
         </Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Calendar Options">
+      <DropdownMenu 
+        aria-label="Calendar Options"
+        onAction={(key) => {
+          if (key === "google") openGoogleCalendar(title, date, description);
+          if (key === "ics") generateIcsFile(title, date, description);
+        }}
+      >
         <DropdownItem 
           key="google" 
           startContent={<IconBrandGoogle size={18} />}
-          onPress={() => openGoogleCalendar(title, date, description)}
         >
           Google Calendar
         </DropdownItem>
         <DropdownItem 
           key="ics" 
           startContent={<IconCalendar size={18} />}
-          onPress={() => generateIcsFile(title, date, description)}
         >
           Apple / Outlook / Other
         </DropdownItem>
