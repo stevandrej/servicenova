@@ -33,7 +33,6 @@ export const Sidebar = ({
           <SidebarLink
             link={{
               label: user?.displayName || "Guest",
-              href: "#",
               icon: <></>,
             }}
           />

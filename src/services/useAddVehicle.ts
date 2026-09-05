@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { TVehicle } from "../types/vehicle.type";
 import { vehiclesQueryOptions } from "./useFetchVehicles";
 import { queryClient } from "../lib/react-query";
+import { savedToast, settleLocally } from "./settleLocally";
 import { toast } from "react-toastify";
 
 interface AddVehicleData {
@@ -23,20 +24,22 @@ async function addVehicle(data: AddVehicleData) {
 		imageUrl: data.imageUrl,
 	};
 
-	const vehiclesCollection = collection(db, "vehicles");
-	const docRef = await addDoc(vehiclesCollection, vehicleData);
+	// The id is minted client-side rather than taken from addDoc's resolved
+	// reference: addDoc only resolves on the server ack, which never comes
+	// offline. doc() on a collection generates the id locally.
+	const vehicleRef = doc(collection(db, "vehicles"));
 
-	return {
-		id: docRef.id,
-		...vehicleData,
-	} as TVehicle;
+	return settleLocally(
+		{ id: vehicleRef.id, ...vehicleData } as TVehicle,
+		setDoc(vehicleRef, vehicleData)
+	);
 }
 
 export function useAddVehicle() {
 	return useMutation({
 		mutationFn: addVehicle,
 		onSuccess: () => {
-			toast.success("Vehicle added successfully");
+			savedToast("Vehicle added successfully");
 			queryClient.refetchQueries({
 				queryKey: vehiclesQueryOptions.queryKey,
 			});

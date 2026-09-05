@@ -9,13 +9,17 @@ import {
 	Input,
 	Textarea,
 	CalendarDate,
+	Autocomplete,
+	AutocompleteItem,
 } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/react";
 import { TService } from "../../types/service.type";
 import { useAddService } from "../../services/useAddService";
 import { useUpdateService } from "../../services/useUpdateService";
-import { parseDate } from "@internationalized/date";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { dateToFirebaseTimestamp } from "../../utils/formatDate";
+import { CURRENCY } from "../../utils/formatCurrency";
+import { SERVICE_TYPE_PRESETS } from "../../utils/serviceTypes";
 
 interface ServiceFormModalProps {
 	isOpen: boolean;
@@ -34,30 +38,32 @@ export const ServiceFormModal = ({
 	vehicleId,
 	nextService,
 }: ServiceFormModalProps) => {
-	const [date, setDate] = useState<CalendarDate>(
-		parseDate(new Date().toISOString().split("T")[0])
-	);
+	const [date, setDate] = useState<CalendarDate>(today(getLocalTimeZone()));
 	const [nextServiceDate, setNextServiceDate] = useState<CalendarDate | null>(
 		null
 	);
+	// Autocomplete needs a controlled value, unlike the ref-driven inputs.
+	const [serviceType, setServiceType] = useState("");
 
 	useEffect(() => {
 		if (isOpen || service) {
 			setDate(
 				service?.date
 					? parseDate(service.date.toISOString().split("T")[0])
-					: parseDate(new Date().toISOString().split("T")[0])
+					: today(getLocalTimeZone())
 			);
+			// Editing shows the date *this* record set, so saving an old
+			// service can no longer overwrite the vehicle's live reminder.
+			// Adding starts from the vehicle's current one.
+			const seed = service ? service.nextServiceDate : nextService;
 			setNextServiceDate(
-				nextService
-					? parseDate(nextService.toISOString().split("T")[0])
-					: null
+				seed ? parseDate(seed.toISOString().split("T")[0]) : null
 			);
+			setServiceType(service?.serviceType ?? "");
 		}
 	}, [isOpen, service, nextService]);
 
 	const mileageRef = useRef<HTMLInputElement>(null);
-	const serviceTypeRef = useRef<HTMLInputElement>(null);
 	const priceRef = useRef<HTMLInputElement>(null);
 	const notesRef = useRef<HTMLTextAreaElement>(null);
 
@@ -69,7 +75,7 @@ export const ServiceFormModal = ({
 		const serviceData = {
 			date: dateToFirebaseTimestamp(new Date(date.toString())),
 			mileage: Number(mileageRef.current?.value),
-			serviceType: serviceTypeRef.current?.value || "",
+			serviceType: serviceType.trim(),
 			price: Number(priceRef.current?.value),
 			notes: notesRef.current?.value || "",
 			nextServiceDate: nextServiceDate
@@ -134,21 +140,42 @@ export const ServiceFormModal = ({
 									labelPlacement="outside"
 								/>
 							</div>
-							<Input
+							{/* allowsCustomValue: the presets are suggestions,
+							    not a closed list - any text still saves. */}
+							<Autocomplete
 								label="Service Type"
-								ref={serviceTypeRef}
-								defaultValue={service?.serviceType}
+								allowsCustomValue
 								isRequired
+								inputValue={serviceType}
+								onInputChange={setServiceType}
+								onSelectionChange={(key) => {
+									const preset = SERVICE_TYPE_PRESETS.find(
+										(p) => p.key === key
+									);
+									if (preset) setServiceType(preset.label);
+								}}
 								variant="bordered"
 								labelPlacement="outside"
-							/>
+								placeholder="e.g. Oil change"
+							>
+								{SERVICE_TYPE_PRESETS.map((preset) => (
+									<AutocompleteItem
+										key={preset.key}
+										startContent={
+											<preset.icon size={18} />
+										}
+									>
+										{preset.label}
+									</AutocompleteItem>
+								))}
+							</Autocomplete>
 							<Input
 								type="number"
 								label="Price"
 								ref={priceRef}
 								defaultValue={service?.price.toString()}
 								startContent={
-									<span className="text-xs">MKD</span>
+									<span className="text-xs">{CURRENCY}</span>
 								}
 								isRequired
 								variant="bordered"
@@ -156,8 +183,8 @@ export const ServiceFormModal = ({
 							/>
 							<Textarea
 								label="Notes"
-								isRequired
 								ref={notesRef}
+								placeholder="Optional"
 								defaultValue={service?.notes}
 								variant="bordered"
 								labelPlacement="outside"
@@ -166,9 +193,7 @@ export const ServiceFormModal = ({
 								showMonthAndYearPickers
 								label="Next Service Date"
 								value={nextServiceDate}
-								onChange={(newDate) =>
-									newDate && setNextServiceDate(newDate)
-								}
+								onChange={setNextServiceDate}
 								variant="bordered"
 								labelPlacement="outside"
 								description="When should a service be performed again?"

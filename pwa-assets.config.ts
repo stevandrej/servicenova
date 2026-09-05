@@ -13,5 +13,5 @@ export default defineConfig({
 			sizes: [180],
 		},
 	},
-	images: ["logo.jpg"],
+	images: ["public/logo.jpg"],
 });

@@ -1,14 +1,21 @@
+import { getServiceUrgency } from "../../utils/serviceDue";
+
+/**
+ * Card tint by how close the next service is. Overdue is deliberately distinct
+ * from due-soon - they used to share the same red, so a vehicle three months
+ * late looked no different from one due next week.
+ */
 export const getStatusColorClasses = (nextService?: Date) => {
-  if (!nextService) return "bg-white";
-
-  const today = new Date();
-  const monthsDiff =
-    (nextService.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30);
-
-  if (monthsDiff <= 1) {
-    return "bg-red-50";
-  } else if (monthsDiff <= 3) {
-    return "bg-orange-50";
+  switch (getServiceUrgency(nextService)) {
+    case "overdue":
+      return "bg-red-100";
+    case "due-soon":
+      return "bg-orange-50";
+    case "upcoming":
+      return "bg-amber-50";
+    case "ok":
+      return "bg-green-50";
+    default:
+      return "bg-white";
   }
-  return "bg-green-50";
 };

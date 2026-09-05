@@ -1,12 +1,15 @@
 import {
 	IconCalendarDue,
 	IconCar,
+	IconChartBar,
 	IconReceipt,
 	IconTools,
 } from "@tabler/icons-react";
 import { VehicleMetricCard } from "../../vehicle-details/vehicle-metric-card";
 import { useMemo } from "react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { DUE_SOON_DAYS, getVehiclesDue } from "../../../utils/serviceDue";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 export default function Overview({
 	vehicles,
@@ -19,12 +22,7 @@ export default function Overview({
 			(acc, s) => acc + (s.price || 0),
 			0
 		);
-		const upcomingServices = vehicles.filter(
-			(v) =>
-				v.nextServiceDate &&
-				new Date(v.nextServiceDate) <=
-					new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-		);
+		const upcomingServices = getVehiclesDue(vehicles);
 
 		return {
 			totalVehicles: vehicles.length,
@@ -40,7 +38,7 @@ export default function Overview({
 	return (
 		<div>
 			<h2 className="text-xl font-semibold mb-4">Overview</h2>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 				<VehicleMetricCard
 					title="Total Vehicles"
 					value={dashboardMetrics.totalVehicles.toString()}
@@ -55,15 +53,21 @@ export default function Overview({
 				/>
 				<VehicleMetricCard
 					title="Total Spent"
-					value={`${dashboardMetrics.totalSpent.toLocaleString()} MKD`}
+					value={formatCurrency(dashboardMetrics.totalSpent)}
 					description="Lifetime maintenance cost"
 					icon={<IconReceipt className="w-5 h-5" />}
 				/>
 				<VehicleMetricCard
 					title="Upcoming Services"
 					value={dashboardMetrics.upcomingServices.toString()}
-					description="Due within 30 days"
+					description={`Due or overdue within ${DUE_SOON_DAYS} days`}
 					icon={<IconCalendarDue className="w-5 h-5" />}
+				/>
+				<VehicleMetricCard
+					title="Average per Vehicle"
+					value={formatCurrency(dashboardMetrics.averagePerVehicle)}
+					description="Lifetime cost per vehicle"
+					icon={<IconChartBar className="w-5 h-5" />}
 				/>
 			</div>
 		</div>

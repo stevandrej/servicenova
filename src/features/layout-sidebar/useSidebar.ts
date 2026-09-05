@@ -4,6 +4,9 @@ interface SidebarContextProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   animate: boolean;
+  /** Desktop only: keep the rail expanded instead of collapsing on mouse-out. */
+  pinned: boolean;
+  setPinned: (pinned: boolean) => void;
 }
 
 export const SidebarContext = createContext<SidebarContextProps | undefined>(

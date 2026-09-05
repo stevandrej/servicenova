@@ -1,50 +1,45 @@
-# React + TypeScript + Vite
+# Service Nova
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A progressive web app for tracking car service history and knowing when the next service is due.
 
-Currently, two official plugins are available:
+Add the vehicles you own, log every service with its date, mileage, cost and notes, set the date the car is next due, and get it into your calendar. The vehicle list colors each car by how soon it needs attention, and the dashboard summarizes the whole fleet: total spend, upcoming services, cars that look neglected, and what maintenance has cost month by month.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## Expanding the ESLint configuration
+React 18 + TypeScript + Vite · TanStack Router & Query · Firebase (Google auth + Firestore) · NextUI + Tailwind + framer-motion · installable PWA via `vite-plugin-pwa`.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Getting started
 
-- Configure the top-level `parserOptions` property like this:
+Requires Node 18+ and [pnpm](https://pnpm.io/).
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+pnpm install
+cp .env.example .env    # then fill in your Firebase project values
+pnpm dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+You need a Firebase project with **Google sign-in** enabled and **Cloud Firestore** provisioned. All eight `VITE_FIREBASE_*` values come from the Firebase console (Project settings → Your apps → Web app config).
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Scripts
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the dev server |
+| `pnpm build` | Typecheck and build for production |
+| `pnpm preview` | Serve the production build (needed to test the service worker) |
+| `pnpm lint` | Run ESLint |
+| `pnpm generate-pwa-assets` | Regenerate app icons from `logo.jpg` |
+
+## Data
+
+Firestore holds one `vehicles` collection; each vehicle document has a `services` subcollection and a denormalized `nextServiceDate`.
+
+> **Note:** this is a *shared* garage by design — every signed-in account reads and writes the same fleet, which is what you want for family cars. Firestore security rules live in the Firebase console, not in this repository.
+
+## Documentation
+
+Written for both people and coding agents:
+
+- [`CLAUDE.md`](CLAUDE.md) — commands, conventions, and where things live
+- [`docs/architecture.md`](docs/architecture.md) — data flow, Firestore model, routing
+- [`docs/features/`](docs/features/) — one document per feature: [auth](docs/features/auth.md), [vehicles](docs/features/vehicles.md), [service history](docs/features/service-history.md), [reminders & calendar](docs/features/reminders-calendar.md), [dashboard](docs/features/dashboard.md), [layout & navigation](docs/features/layout-navigation.md), [PWA & offline](docs/features/pwa-offline.md)

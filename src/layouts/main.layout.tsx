@@ -1,7 +1,10 @@
 import { ReactNode, useState } from "react";
+import { Chip } from "@nextui-org/react";
+import { IconWifiOff } from "@tabler/icons-react";
 import { Sidebar } from "../features/layout-sidebar/sidebar";
 import { cn } from "../lib/utils";
-import { ReloadPrompt } from "../components/ReloadPrompt";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import { useServiceReminders } from "../hooks/useServiceReminders";
 
 interface MainLayoutProps {
 	children: ReactNode;
@@ -9,6 +12,8 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
 	const [open, setOpen] = useState(false);
+	const isOnline = useOnlineStatus();
+	useServiceReminders();
 
 	return (
 		<>
@@ -20,7 +25,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 				<Sidebar open={open} setOpen={setOpen} animate />
 				<div
 					className={cn(
-						"transition-all duration-[2000ms] ease-in-out",
+						"transition-[margin] duration-300 ease-in-out",
 						"p-2 md:p-10 flex flex-col gap-2 flex-1 w-full h-full md:ml-[60px] overflow-auto",
 						"bg-white"
 					)}
@@ -28,7 +33,16 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 					{children}
 				</div>
 			</div>
-			<ReloadPrompt />
+			{!isOnline && (
+				<Chip
+					color="warning"
+					variant="flat"
+					startContent={<IconWifiOff size={16} />}
+					className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[200]"
+				>
+					Offline — changes will sync
+				</Chip>
+			)}
 		</>
 	);
 };

@@ -1,17 +1,10 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { LoginPage } from "../features/auth/login.page";
-import { auth } from "../config/firebase";
+import { authService } from "../services/auth.service";
 
 export const Route = createFileRoute("/login")({
   beforeLoad: async () => {
-    await new Promise((resolve) => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        unsubscribe();
-        resolve(user);
-      });
-    });
-
-    const user = auth.currentUser;
+    const user = await authService.waitForUser();
     if (user) {
       throw redirect({
         to: "/vehicles",

@@ -1,6 +1,7 @@
 import { Route as DashboardRoute } from "../../routes/_auth/dashboard";
 import VehiclesNeedAttention from "./components/vehicles-need-attention";
 import MonthlySpendingChart from "./components/monthly-spending-chart";
+import ReminderPermissionCard from "./components/reminder-permission-card";
 import Overview from "./components/overview";
 
 export const Dashboard = () => {
@@ -8,6 +9,7 @@ export const Dashboard = () => {
 
 	return (
 		<div className="space-y-6">
+			<ReminderPermissionCard />
 			<Overview vehicles={vehicles} />
 			<VehiclesNeedAttention vehicles={vehicles} />
 			<MonthlySpendingChart vehicles={vehicles} />

@@ -3,6 +3,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { TVehicle } from "../types/vehicle.type";
 import { vehiclesQueryOptions } from "./useFetchVehicles";
+import { savedToast, settleLocally } from "./settleLocally";
 import { toast } from "react-toastify";
 import { queryClient } from "../lib/react-query";
 
@@ -25,19 +26,18 @@ async function updateVehicle(data: UpdateVehicleData) {
 	};
 
 	const vehicleRef = doc(db, "vehicles", data.id);
-	await updateDoc(vehicleRef, vehicleData);
 
-	return {
-		id: data.id,
-		...vehicleData,
-	} as TVehicle;
+	return settleLocally(
+		{ id: data.id, ...vehicleData } as TVehicle,
+		updateDoc(vehicleRef, vehicleData)
+	);
 }
 
 export function useUpdateVehicle() {
 	return useMutation({
 		mutationFn: updateVehicle,
 		onSuccess: () => {
-			toast.success("Vehicle updated successfully");
+			savedToast("Vehicle updated successfully");
 			queryClient.refetchQueries({
 				queryKey: vehiclesQueryOptions.queryKey,
 			});

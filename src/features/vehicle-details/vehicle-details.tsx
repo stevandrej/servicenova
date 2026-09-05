@@ -4,13 +4,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 import { TVehicleWithServices } from "../../types/vehicle.type";
 import { TService } from "../../types/service.type";
-import { formatDateToLongDate } from "../../utils/formatDate";
 import { ServiceFormModal } from "./service-form-modal";
 import { VehicleHeader } from "./components/vehicle-header";
 import { VehicleInfo } from "./components/vehicle-info";
 import { ServiceHistory } from "./components/service-history";
-import { ServiceItem } from "./service-item";
 import { VehicleFormModal } from "./vehicle-form-modal";
+import { ConfirmDialog } from "../../components/confirm-dialog";
 
 interface VehicleDetailsProps {
   vehicle: TVehicleWithServices;
@@ -18,10 +17,15 @@ interface VehicleDetailsProps {
 
 export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { 
-    isOpen: isEditModalOpen, 
-    onOpen: onOpenEditModal, 
-    onClose: onCloseEditModal 
+  const {
+    isOpen: isEditModalOpen,
+    onOpen: onOpenEditModal,
+    onClose: onCloseEditModal,
+  } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onOpenDelete,
+    onClose: onCloseDelete,
   } = useDisclosure();
   const [selectedService, setSelectedService] = useState<TService | null>(null);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -34,53 +38,35 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
     onOpen();
   }, [onOpen]);
 
-  const handleEditService = useCallback((service: TService) => {
-    setSelectedService(service);
-    setMode("edit");
-    onOpen();
-  }, [onOpen]);
+  const handleEditService = useCallback(
+    (service: TService) => {
+      setSelectedService(service);
+      setMode("edit");
+      onOpen();
+    },
+    [onOpen]
+  );
 
   const handleDeleteVehicle = useCallback(() => {
-    if (confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) {
-      deleteVehicle(vehicle.id, {
-        onSuccess: () => {
-          navigate({ to: "/vehicles" });
-        },
-      });
-    }
-  }, [deleteVehicle, vehicle.id, navigate]);
+    onCloseDelete();
+    deleteVehicle(vehicle.id, {
+      onSuccess: () => {
+        navigate({ to: "/vehicles" });
+      },
+    });
+  }, [deleteVehicle, vehicle.id, navigate, onCloseDelete]);
 
-  const sortedServices = useMemo(() => 
-    [...vehicle.services].sort((a, b) => b.date.getTime() - a.date.getTime()),
+  // vehicle.services is already newest-first: fetchVehicles sorts it,
+  // useAddService re-sorts its cache patch, and useDeleteService only filters.
+  const totalSpent = useMemo(
+    () => vehicle.services.reduce((acc, service) => acc + service.price, 0),
     [vehicle.services]
   );
 
-  const timelineData = useMemo(() => 
-    sortedServices.map((service) => ({
-      title: formatDateToLongDate(service.date),
-      content: (
-        <ServiceItem
-          vehicleId={vehicle.id}
-          service={service}
-          onEdit={() => handleEditService(service)}
-        />
-      ),
-    })),
-    [sortedServices, vehicle.id, handleEditService]
-  );
+  const lastServiceDate = vehicle.services[0]?.date ?? null;
 
-  const totalSpent = useMemo(() => 
-    vehicle.services.reduce((acc, service) => acc + service.price, 0),
-    [vehicle.services]
-  );
-
-  const lastServiceDate = useMemo(() => 
-    sortedServices[0]?.date || null,
-    [sortedServices]
-  );
-
-  const currentMileage = useMemo(() => 
-    Math.max(...vehicle.services.map((s) => s.mileage), 0),
+  const currentMileage = useMemo(
+    () => Math.max(...vehicle.services.map((s) => s.mileage), 0),
     [vehicle.services]
   );
 
@@ -88,7 +74,7 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
     <div className="max-w-4xl mx-auto space-y-6">
       <VehicleHeader
         onEdit={onOpenEditModal}
-        onDelete={handleDeleteVehicle}
+        onDelete={onOpenDelete}
         isDeleting={isDeleting}
       />
 
@@ -101,8 +87,10 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
       />
 
       <ServiceHistory
-        timelineData={timelineData}
+        services={vehicle.services}
+        vehicleId={vehicle.id}
         onAddService={handleAddService}
+        onEditService={handleEditService}
       />
 
       <ServiceFormModal
@@ -119,6 +107,15 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
         onClose={onCloseEditModal}
         vehicle={vehicle}
         mode="edit"
+      />
+
+      <ConfirmDialog
+        isOpen={isDeleteOpen}
+        onClose={onCloseDelete}
+        onConfirm={handleDeleteVehicle}
+        title="Delete vehicle?"
+        body={`${vehicle.make} ${vehicle.model} (${vehicle.plate}) and all ${vehicle.services.length} of its service records will be permanently deleted. This cannot be undone.`}
+        isPending={isDeleting}
       />
     </div>
   );

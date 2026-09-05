@@ -4,6 +4,7 @@ import { TVehicleWithServices } from "../../../types/vehicle.type";
 import { VehicleMetricCard } from "../vehicle-metric-card";
 import { formatDateToLongDate } from "../../../utils/formatDate";
 import { AddToCalendar } from "../../../components/add-to-calendar";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 interface VehicleInfoProps {
   vehicle: TVehicleWithServices;
@@ -39,7 +40,7 @@ export const VehicleInfo = ({
           Add Service
         </Button>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mt-4">
         <VehicleMetricCard
           title="Next Service Due"
           value={
@@ -53,6 +54,7 @@ export const VehicleInfo = ({
                 date={vehicle.nextServiceDate} 
                 vehicleMake={vehicle.make} 
                 vehicleModel={vehicle.model} 
+                vehiclePlate={vehicle.plate}
               />
             ) : undefined
           }
@@ -72,7 +74,7 @@ export const VehicleInfo = ({
         />
         <VehicleMetricCard
           title="Total Spent"
-          value={`${totalSpent.toLocaleString()} MKD`}
+          value={formatCurrency(totalSpent)}
         />
         <VehicleMetricCard
           title="Current Mileage"

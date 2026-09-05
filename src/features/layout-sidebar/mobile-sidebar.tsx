@@ -18,10 +18,17 @@ export const MobileSidebar = ({
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
-          <IconMenu2
-            className="text-neutral-200"
+          {/* A button, not a bare SVG with onClick: the menu has to be
+              reachable and activatable from the keyboard, and needs a name. */}
+          <button
+            type="button"
             onClick={() => setOpen(!open)}
-          />
+            aria-label="Open menu"
+            aria-expanded={open}
+            className="text-neutral-200 p-1 -m-1"
+          >
+            <IconMenu2 />
+          </button>
         </div>
         <AnimatePresence>
           {open && (
@@ -38,12 +45,14 @@ export const MobileSidebar = ({
                 className
               )}
             >
-              <div
-                className="absolute right-10 top-10 z-50 text-neutral-200"
+              <button
+                type="button"
+                className="absolute right-10 top-10 z-50 text-neutral-200 p-1 -m-1"
                 onClick={() => setOpen(!open)}
+                aria-label="Close menu"
               >
                 <IconX />
-              </div>
+              </button>
               {children}
             </motion.div>
           )}
