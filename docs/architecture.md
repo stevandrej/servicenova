@@ -37,6 +37,19 @@ The first three all trace to one thing: `@nextui-org/react` is deprecated (renam
 
 `@vite-pwa/assets-generator` runs ahead of its peer range on purpose. `vite-plugin-pwa` 1.x peers on `^1.0.0`, so `pnpm install` reports one unmet peer, but the two only ever meet through vite-plugin-pwa's `pwaAssets` option, which `vite.config.ts` does not use. The generator is a standalone CLI behind `pnpm generate-pwa-assets`. If `pwaAssets` is ever enabled, pin it back to 1.x.
 
+## Deploying
+
+The build is a plain static bundle in `dist/`, but three things have to be right or it fails in ways the error message does not explain.
+
+**Node and pnpm are pinned in `package.json`, not in the host's dashboard.** `engines.node` is `24.x` and `packageManager` is `pnpm@12.4.2`. Both matter:
+
+- Node 20 cannot run this toolchain. `vitest` requires `^22.12.0 || ^24.0.0 || >=26.0.0`, and `eslint` wants `^20.19.0 || ^22.13.0 || >=24`.
+- Without `packageManager`, a host infers the pnpm version from `lockfileVersion: '9.0'` and installs pnpm 9. That version does not understand `publicHoistPattern` or `allowBuilds` in `pnpm-workspace.yaml`, both of which are pnpm 10+ settings. The install either fails outright on unapproved build scripts, or — worse — succeeds and ships an app with no NextUI styling, because the hoisting that `tailwind.config.js` depends on never happened. See "NextUI styling depends on pnpm hoisting" above.
+
+**The eight `VITE_FIREBASE_*` variables are needed at build time, not runtime.** Vite inlines them into the bundle, so they must exist in the host's environment before the build runs. `src/config/firebase.ts` does not validate them: if they are missing the build still succeeds, and the app fails in the browser with a Firebase error that says nothing about configuration.
+
+**Client-side routes need an SPA fallback.** Every route below `/` is rendered by TanStack Router, so a direct visit or refresh on `/vehicles/<id>` has to serve `index.html`. Hosts that do not do this automatically need a catch-all rewrite. The service worker's `navigateFallback` does not cover it — that only applies once the worker is installed, never on a first visit.
+
 ## Provider stack
 
 `src/main.tsx` builds the router and nests the providers:
