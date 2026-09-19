@@ -42,6 +42,10 @@ Two `runtimeCaching` rules back it up, both `CacheFirst` with a 30-day expiry an
 
 **Icons**: `pnpm generate-pwa-assets` runs `@vite-pwa/assets-generator` against `pwa-assets.config.ts` and rewrites the icons in `public/`. The preset is inline: transparent 64/192/512 (with a 64px `favicon.ico`), maskable 512, and apple 180 — all rendered from `logo.jpg`.
 
+**The apple icon sets `padding: 0`, and that is deliberate.** The generator pads every preset by 30% by default. That is right for `maskable`, where Android crops to a safe zone and would otherwise cut the logo off, but wrong for `apple`: iOS never crops the touch icon, it only rounds the corners. With the default the logo filled 70% of the home-screen tile and looked shrunken inside a white border. Keep `maskable` padded and `apple` at zero; they are not interchangeable.
+
+iOS caches the home-screen icon, so a redeploy alone will not update it — the shortcut has to be removed and re-added to see a change.
+
 ## Data touched
 
 None. Caching is Workbox precaching of build assets.
