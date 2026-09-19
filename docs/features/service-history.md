@@ -8,7 +8,8 @@ The per-vehicle detail page: every service that vehicle has had, rendered as a c
 
 | Path | Role |
 | --- | --- |
-| `src/routes/_auth/vehicles_/$vehicleId.tsx` | `/vehicles/:vehicleId` — finds the vehicle in the shared query, handles loading/not-found |
+| `src/routes/_auth/vehicles_/$vehicleId.tsx` | `/vehicles/:vehicleId` — thin route that renders `VehicleDetailsPage` |
+| `src/features/vehicle-details/vehicle-details-page.tsx` | Finds the vehicle in the shared query, handles loading/not-found |
 | `src/features/vehicle-details/vehicle-details.tsx` | Orchestrator: modal state and derived metrics |
 | `src/features/vehicle-details/components/vehicle-header.tsx` | Back / Edit Vehicle / Delete Vehicle buttons |
 | `src/features/vehicle-details/components/vehicle-info.tsx` | Title block + the five metric cards |

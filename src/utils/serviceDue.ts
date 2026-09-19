@@ -1,4 +1,5 @@
 import { TVehicleWithServices } from "../types/vehicle.type";
+import { getServiceIntervalMonths } from "./serviceTypes";
 
 /** A next service inside this window counts as due soon. */
 export const DUE_SOON_DAYS = 30;
@@ -29,6 +30,38 @@ export function daysUntil(date: Date): number {
 /** Whole days since `date`. */
 export function daysSince(date: Date): number {
   return Math.floor((Date.now() - date.getTime()) / MS_PER_DAY);
+}
+
+/**
+ * Adds whole months in UTC, clamping to the end of the target month so that
+ * e.g. 31 January plus one month is 28 February rather than spilling into March.
+ * Dates are stored as UTC-midnight day values, so this stays in UTC throughout.
+ */
+export function addMonthsUtc(date: Date, months: number): Date {
+  const target = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1)
+  );
+  const daysInTargetMonth = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+
+  target.setUTCDate(Math.min(date.getUTCDate(), daysInTargetMonth));
+  return target;
+}
+
+/**
+ * When the next service should fall, based on how long this kind of service
+ * lasts. Returns null for one-off jobs and unrecognized types, which leaves the
+ * next service date empty for the user to fill in.
+ *
+ * This is only ever a suggestion: a date the user has typed takes precedence.
+ */
+export function suggestNextServiceDate(
+  serviceDate: Date,
+  serviceType: string
+): Date | null {
+  const months = getServiceIntervalMonths(serviceType);
+  return months === null ? null : addMonthsUtc(serviceDate, months);
 }
 
 export function getServiceUrgency(

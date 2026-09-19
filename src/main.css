@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  iOS Safari zooms the page in when you focus a control whose text is smaller
+  than 16px, and NextUI's inputs are 14px (text-small). Bumping just the
+  focusable controls stops that without touching the viewport meta, so pinch
+  zoom still works. Sits after the utilities and carries two :not()s so it
+  outranks .text-small; :where() keeps the element names weightless.
+*/
+@media (pointer: coarse) {
+	:where(input, textarea, select):not([type="checkbox"]):not([type="radio"]) {
+		font-size: 16px;
+	}
+}

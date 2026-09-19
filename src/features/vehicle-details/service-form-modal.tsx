@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
 	Modal,
 	ModalContent,
@@ -20,6 +20,7 @@ import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { dateToFirebaseTimestamp } from "../../utils/formatDate";
 import { CURRENCY } from "../../utils/formatCurrency";
 import { SERVICE_TYPE_PRESETS } from "../../utils/serviceTypes";
+import { suggestNextServiceDate } from "../../utils/serviceDue";
 
 interface ServiceFormModalProps {
 	isOpen: boolean;
@@ -44,24 +45,60 @@ export const ServiceFormModal = ({
 	);
 	// Autocomplete needs a controlled value, unlike the ref-driven inputs.
 	const [serviceType, setServiceType] = useState("");
+	// Once the user picks a next service date themselves, their choice sticks
+	// and the service type no longer moves it.
+	const [nextDateTouched, setNextDateTouched] = useState(false);
 
-	useEffect(() => {
-		if (isOpen || service) {
-			setDate(
-				service?.date
-					? parseDate(service.date.toISOString().split("T")[0])
-					: today(getLocalTimeZone())
-			);
-			// Editing shows the date *this* record set, so saving an old
-			// service can no longer overwrite the vehicle's live reminder.
-			// Adding starts from the vehicle's current one.
-			const seed = service ? service.nextServiceDate : nextService;
+	// Reset the form whenever the modal opens for a (possibly different) service.
+	// Adjusted during render rather than in an effect, per React's guidance for
+	// resetting state on prop changes: https://react.dev/learn/you-might-not-need-an-effect
+	const [syncedKey, setSyncedKey] = useState<string | null>(null);
+	const openKey =
+		isOpen || service
+			? `${isOpen}:${service?.id ?? ""}:${nextService?.getTime() ?? ""}`
+			: null;
+	if (openKey !== null && openKey !== syncedKey) {
+		setSyncedKey(openKey);
+		setDate(
+			service?.date
+				? parseDate(service.date.toISOString().split("T")[0])
+				: today(getLocalTimeZone())
+		);
+		// Editing shows the date *this* record set, so saving an old
+		// service can no longer overwrite the vehicle's live reminder.
+		// Adding starts from the vehicle's current one.
+		const seed = service ? service.nextServiceDate : nextService;
+		setNextServiceDate(
+			seed ? parseDate(seed.toISOString().split("T")[0]) : null
+		);
+		setServiceType(service?.serviceType ?? "");
+		// A date already saved on this record is the user's own choice, so
+		// editing must not overwrite it. A fresh record starts open to a
+		// suggestion even though it seeds from the vehicle's current reminder.
+		setNextDateTouched(Boolean(service?.nextServiceDate));
+	}
+
+	/**
+	 * Moves the next service date to match how long this kind of service lasts.
+	 * Only ever fills in a suggestion - it never clears an existing date, and it
+	 * does nothing once the user has set the date themselves.
+	 */
+	const applySuggestion = (
+		serviceDate: CalendarDate,
+		nextServiceType: string
+	) => {
+		if (nextDateTouched) return;
+
+		const suggestion = suggestNextServiceDate(
+			new Date(serviceDate.toString()),
+			nextServiceType
+		);
+		if (suggestion) {
 			setNextServiceDate(
-				seed ? parseDate(seed.toISOString().split("T")[0]) : null
+				parseDate(suggestion.toISOString().split("T")[0])
 			);
-			setServiceType(service?.serviceType ?? "");
 		}
-	}, [isOpen, service, nextService]);
+	};
 
 	const mileageRef = useRef<HTMLInputElement>(null);
 	const priceRef = useRef<HTMLInputElement>(null);
@@ -108,7 +145,22 @@ export const ServiceFormModal = ({
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} size="2xl" placement="center">
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			size="2xl"
+			// The wrapper is sized from the visual viewport, so a centered modal
+			// re-centers itself - visibly jumping - when the on-screen keyboard
+			// opens. Top-anchored below sm, where that keyboard exists.
+			placement="top-center"
+			// Keeps the header and submit button put and scrolls only the
+			// fields, instead of the modal outgrowing the space above the
+			// keyboard.
+			scrollBehavior="inside"
+			classNames={{
+				base: "max-h-[calc(100%_-_0.5rem)] sm:max-h-[calc(100%_-_8rem)]",
+			}}
+		>
 			<ModalContent>
 				{(onClose) => (
 					<form onSubmit={handleSubmit}>
@@ -123,9 +175,11 @@ export const ServiceFormModal = ({
 									showMonthAndYearPickers
 									label="Service Date"
 									value={date}
-									onChange={(newDate) =>
-										newDate && setDate(newDate)
-									}
+									onChange={(newDate) => {
+										if (!newDate) return;
+										setDate(newDate);
+										applySuggestion(newDate, serviceType);
+									}}
 									isRequired
 									variant="bordered"
 									labelPlacement="outside"
@@ -147,12 +201,18 @@ export const ServiceFormModal = ({
 								allowsCustomValue
 								isRequired
 								inputValue={serviceType}
-								onInputChange={setServiceType}
+								onInputChange={(value) => {
+									setServiceType(value);
+									applySuggestion(date, value);
+								}}
 								onSelectionChange={(key) => {
 									const preset = SERVICE_TYPE_PRESETS.find(
 										(p) => p.key === key
 									);
-									if (preset) setServiceType(preset.label);
+									if (preset) {
+										setServiceType(preset.label);
+										applySuggestion(date, preset.label);
+									}
 								}}
 								variant="bordered"
 								labelPlacement="outside"
@@ -193,7 +253,10 @@ export const ServiceFormModal = ({
 								showMonthAndYearPickers
 								label="Next Service Date"
 								value={nextServiceDate}
-								onChange={setNextServiceDate}
+								onChange={(newDate) => {
+									setNextDateTouched(true);
+									setNextServiceDate(newDate);
+								}}
 								variant="bordered"
 								labelPlacement="outside"
 								description="When should a service be performed again?"

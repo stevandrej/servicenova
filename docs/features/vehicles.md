@@ -8,7 +8,8 @@ The fleet: listing your cars, adding and editing them, and deleting them. `/vehi
 
 | Path | Role |
 | --- | --- |
-| `src/routes/_auth/vehicles.tsx` | `/vehicles` — header, responsive grid, empty state, "Add Vehicle" modal trigger |
+| `src/routes/_auth/vehicles.tsx` | `/vehicles` — thin route with the prefetch loader; renders `VehicleList` |
+| `src/features/vehicle-list/vehicle-list.tsx` | Header, search and sort, responsive grid, empty state, "Add Vehicle" modal trigger |
 | `src/features/vehicle-card/vehicle-card.tsx` | One card: image, make/model, plate, next service, delete button |
 | `src/features/vehicle-card/getStatusColorClasses.ts` | Maps the next-service date to a background color |
 | `src/features/vehicle-details/vehicle-form-modal.tsx` | NextUI `Modal` shell around the form |
@@ -17,6 +18,27 @@ The fleet: listing your cars, adding and editing them, and deleting them. `/vehi
 | `src/services/useUpdateVehicle.ts` | Update |
 | `src/services/useDeleteVehicle.ts` | Delete |
 | `src/services/useFetchVehicles.ts` | The shared read (see [../architecture.md](../architecture.md)) |
+| `src/components/export-menu.tsx` | The Export dropdown, shared by the fleet list and one vehicle |
+| `src/utils/exportVehicles.ts` | Flattening and the CSV/JSON formatters (pure) |
+| `src/utils/exportExcel.ts` | The `.xlsx` column schema and the on-demand writer |
+| `src/utils/downloadFile.ts` | Hands text to the browser as a file |
+
+## Export
+
+`ExportMenu` offers the same three formats in two places: the fleet header on `/vehicles`, and the header of a single vehicle. The only difference is what it is handed — every vehicle, or an array of one — plus a `slug` that names the file (`service-nova-ford-mondeo-sk-208-sv-2026-09-19.xlsx`).
+
+Every format flattens through `buildServiceRows`, so they cannot drift apart; a test asserts the Excel columns match `CSV_HEADERS` exactly. A vehicle with no services still produces a row, since an export that dropped it would be a misleading backup.
+
+| Format | For | Notes |
+| --- | --- | --- |
+| Excel (`.xlsx`) | Analysis | Dates and numbers are real typed cells, so a sheet can total and chart them without retyping a column |
+| CSV | Anything | RFC 4180 quoting, ISO dates, written with a BOM so Excel reads UTF-8 notes correctly |
+| JSON | Backup | Nested per vehicle, the only format that keeps `imageUrl` |
+
+Two things are easy to break:
+
+- **`write-excel-file` is imported inside `downloadXlsx`, not at the top of the module.** It is ~69 kB and builds into its own chunk; a static import would move that onto every first paint. Its v4 API is `writeXlsxFile(rows, { columns }).toFile(name)` — the `schema` parameter that most examples online still show was removed in v4.
+- **Spreadsheet cells carry no timezone.** Dates go through `toSpreadsheetDate`, which rebuilds the stored UTC-midnight value as the same calendar day in local time. Passing the raw `Date` shows the previous day to anyone west of UTC.
 | `src/types/vehicle.type.ts` | `TVehicle`, `TVehicleWithServices` |
 | `src/assets/no-image.jpg` | Fallback image when `imageUrl` is empty |
 
@@ -58,7 +80,7 @@ Both modals are mounted from two places: the list route (`mode="add"`) and `vehi
 
 - **A new vehicle field** (VIN, color, fuel type): add it to `TVehicle`, to the `AddVehicleData`/`UpdateVehicleData` interfaces and payload objects in `useAddVehicle.ts`/`useUpdateVehicle.ts`, and to `vehicle.form.tsx` (a ref, an `Input`, the `formData` object, and the edit-mode `useEffect`). `useFetchVehicles` spreads `doc.data()`, so reads need no change.
 - **Changing urgency colors**: `getStatusColorClasses.ts` only — but note the dashboard uses its own separate thresholds ([dashboard.md](dashboard.md)).
-- **Filtering or sorting the grid**: derive it in `src/routes/_auth/vehicles.tsx` from the query result; don't add a second Firestore query.
+- **Filtering or sorting the grid**: derive it in `src/features/vehicle-list/vehicle-list.tsx` from the query result; don't add a second Firestore query.
 
 ## By design
 

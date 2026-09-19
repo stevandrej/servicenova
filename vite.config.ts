@@ -3,11 +3,15 @@ import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import * as path from "path";
+import { browserToTerminal } from "./vite/browser-to-terminal.ts";
 
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [
 		react(),
+		// Dev-only: pipes browser console errors to the terminal. See the file
+		// for why (runtime-only failures are invisible to lint and tsc).
+		browserToTerminal(),
 		TanStackRouterVite(),
 		VitePWA({
 			registerType: 'prompt',
@@ -92,7 +96,7 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			"@": path.resolve(__dirname, "src"), // '@' points to the 'src' directory
+			"@": path.resolve(import.meta.dirname, "src"), // '@' points to the 'src' directory
 		},
 	},
 });

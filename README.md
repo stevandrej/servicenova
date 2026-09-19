@@ -6,7 +6,7 @@ Add the vehicles you own, log every service with its date, mileage, cost and not
 
 ## Stack
 
-React 18 + TypeScript + Vite · TanStack Router & Query · Firebase (Google auth + Firestore) · NextUI + Tailwind + framer-motion · installable PWA via `vite-plugin-pwa`.
+React 19 + TypeScript + Vite · TanStack Router & Query · Firebase (Google auth + Firestore) · NextUI + Tailwind + framer-motion · installable PWA via `vite-plugin-pwa`.
 
 ## Getting started
 
@@ -25,6 +25,7 @@ You need a Firebase project with **Google sign-in** enabled and **Cloud Firestor
 | Command | Description |
 | --- | --- |
 | `pnpm dev` | Start the dev server |
+| `pnpm typecheck` | Typecheck only (fast, incremental) |
 | `pnpm build` | Typecheck and build for production |
 | `pnpm preview` | Serve the production build (needed to test the service worker) |
 | `pnpm lint` | Run ESLint |
@@ -40,6 +41,6 @@ Firestore holds one `vehicles` collection; each vehicle document has a `services
 
 Written for both people and coding agents:
 
-- [`CLAUDE.md`](CLAUDE.md) — commands, conventions, and where things live
+- [`AGENTS.md`](AGENTS.md) — commands, conventions, pinned library-doc URLs, and where things live. Read by Claude Code, Codex, Cursor and Copilot; `CLAUDE.md` is a one-line pointer to it.
 - [`docs/architecture.md`](docs/architecture.md) — data flow, Firestore model, routing
 - [`docs/features/`](docs/features/) — one document per feature: [auth](docs/features/auth.md), [vehicles](docs/features/vehicles.md), [service history](docs/features/service-history.md), [reminders & calendar](docs/features/reminders-calendar.md), [dashboard](docs/features/dashboard.md), [layout & navigation](docs/features/layout-navigation.md), [PWA & offline](docs/features/pwa-offline.md)

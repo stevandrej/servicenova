@@ -1,43 +1,31 @@
-"use client";
-import React from "react";
-import { SidebarProvider } from "./sidebar.provider";
 import { SidebarLink } from "./sidebar-link";
 import { useSidebarLinks } from "./useSidebarLinks.data";
 import { SidebarBody } from "./sidebar-body";
 import { useAuth } from "../../hooks/useAuth";
 
-export const Sidebar = ({
-  open,
-  setOpen,
-  animate,
-}: {
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  animate?: boolean;
-}) => {
-
+// The SidebarProvider lives in MainLayout, not here: the content area also
+// reads `pinned` from it to reserve the expanded rail's width.
+export const Sidebar = () => {
   const links = useSidebarLinks();
   const { user } = useAuth();
 
   return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
-      <SidebarBody className="justify-between gap-10">
-        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="mt-8 flex flex-col gap-2">
-            {links.map((link, idx) => (
-              <SidebarLink key={idx} link={link} />
-            ))}
-          </div>
+    <SidebarBody className="justify-between gap-10">
+      <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="mt-8 flex flex-col gap-2">
+          {links.map((link, idx) => (
+            <SidebarLink key={idx} link={link} />
+          ))}
         </div>
-        <div>
-          <SidebarLink
-            link={{
-              label: user?.displayName || "Guest",
-              icon: <></>,
-            }}
-          />
-        </div>
-      </SidebarBody>
-    </SidebarProvider>
+      </div>
+      <div>
+        <SidebarLink
+          link={{
+            label: user?.displayName || "Guest",
+            icon: <></>,
+          }}
+        />
+      </div>
+    </SidebarBody>
   );
 };

@@ -10,7 +10,7 @@ The authenticated app shell: a collapsing sidebar on desktop, a slide-over drawe
 | --- | --- |
 | `src/routes/_auth.tsx` | Wraps all protected routes in `MainLayout` |
 | `src/layouts/main.layout.tsx` | Shell: sidebar + content area + offline chip |
-| `src/features/layout-sidebar/sidebar.tsx` | Composes provider, links, and the user row |
+| `src/features/layout-sidebar/sidebar.tsx` | Composes the links and the user row |
 | `src/features/layout-sidebar/sidebar.provider.tsx` | Context provider; supports controlled or internal `open` state |
 | `src/features/layout-sidebar/useSidebar.ts` | `SidebarContext` and `useSidebar()` (throws outside a provider) |
 | `src/features/layout-sidebar/sidebar-body.tsx` | Renders both variants; CSS decides which is visible |
@@ -24,11 +24,13 @@ The authenticated app shell: a collapsing sidebar on desktop, a slide-over drawe
 
 ## How it works
 
-`MainLayout` owns the `open` state and passes it to `Sidebar` along with `animate`, so both sidebar variants share one source of truth. The content area is `md:ml-[60px]` — matching the collapsed rail width — and `overflow-auto`, so pages scroll independently of the shell.
+`MainLayout` renders the `SidebarProvider` — around the content area as well as the sidebar — and owns the `open` state, so both sidebar variants and the content share one source of truth. The content area is `overflow-auto`, so pages scroll independently of the shell.
+
+Its left margin reserves the width of the `fixed` rail, and reads `pinned` from the sidebar context to do it: `md:ml-[250px]` while pinned, `md:ml-[60px]` otherwise, with a `transition-[margin]` so the two move in step with the rail's own width animation. Reserving only the collapsed width when unpinned is deliberate — a hover must not reflow the page — but a pinned rail is permanent, so the content has to move out from under it or the rail sits on top of it.
 
 **Desktop.** `DesktopSidebar` is `fixed`, `hidden md:flex`, and animates its width between `60px` and `250px` on mouse enter and leave. It never pushes content; the layout's fixed left margin reserves the collapsed width.
 
-A pin button in the top corner toggles `pinned` in the sidebar context, persisted to `localStorage` under `serviceNova:sidebarPinned` (reads and writes are wrapped in `try`/`catch` — private mode throws). While pinned the rail stays expanded and the mouse handlers are skipped, so it no longer opens and closes every time the pointer crosses the left edge. Pinning is desktop-only: the button lives inside the `hidden md:flex` rail.
+A pin button in the top corner toggles `pinned` in the sidebar context, persisted to `localStorage` under `serviceNova:sidebarPinned` (reads and writes are wrapped in `try`/`catch` — private mode throws). While pinned the rail stays expanded, the mouse handlers are skipped, and the content area widens its left margin to match. Pinning is desktop-only: the button lives inside the `hidden md:flex` rail.
 
 **Mobile.** `MobileSidebar` renders a slim bar with an `IconMenu2` toggle; when open, an `AnimatePresence` panel slides in from the left at `z-[100]` covering the screen, with an `IconX` to close. Both are real `<button>`s with `aria-label`s — as bare SVGs with `onClick` they could not be reached or activated from the keyboard.
 
@@ -51,5 +53,5 @@ None — Firebase Auth only, for the display name and logout.
 ## Known gaps
 
 - `darkMode: "class"` is set in `tailwind.config.js`, but nothing ever adds the class and **no component carries a `dark:` variant any more** — the last of them went with `Timeline.tsx`. The toast container is still hardcoded to `theme="dark"`. Dark mode is now a clean slate rather than a half-built feature: adding it means a deliberate palette pass, not just a toggle.
-- `sidebar.tsx` and `sidebar-link.tsx` are marked `"use client"`, a Next.js directive with no meaning in this Vite app — a leftover from where the component was copied from.
+- `sidebar-link.tsx` is marked `"use client"`, a Next.js directive with no meaning in this Vite app — a leftover from where the component was copied from.
 - The pinned state is per-browser `localStorage`, so it does not follow the user across devices.

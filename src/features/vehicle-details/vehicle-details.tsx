@@ -76,6 +76,7 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
         onEdit={onOpenEditModal}
         onDelete={onOpenDelete}
         isDeleting={isDeleting}
+        vehicle={vehicle}
       />
 
       <VehicleInfo
