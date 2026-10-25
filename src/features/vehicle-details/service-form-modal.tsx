@@ -102,10 +102,22 @@ export const ServiceFormModal = ({
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} size="2xl" placement="center">
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			size="2xl"
+			placement="center"
+			scrollBehavior="inside"
+			classNames={{
+				base: "max-h-[calc(100%_-_1rem)] sm:max-h-[calc(100%_-_8rem)]",
+			}}
+		>
 			<ModalContent>
 				{(onClose) => (
-					<form onSubmit={handleSubmit}>
+					<form
+						onSubmit={handleSubmit}
+						className="flex flex-col min-h-0"
+					>
 						<ModalHeader>
 							{mode === "add"
 								? "Add New Service"

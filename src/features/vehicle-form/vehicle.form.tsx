@@ -88,7 +88,7 @@ export const VehicleForm = ({ mode, vehicle, onSuccess }: VehicleFormProps) => {
 			: "Update Vehicle";
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit} className="flex flex-col min-h-0">
 			<ModalHeader className="flex gap-3">
 				<IconCar className="text-primary w-8 h-8" />
 				<div>

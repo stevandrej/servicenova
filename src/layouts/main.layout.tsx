@@ -14,7 +14,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 		<>
 			<div
 				className={cn(
-					"flex flex-col md:flex-row bg-slate-300 w-full h-screen flex-1 mx-auto"
+					"flex flex-col md:flex-row bg-slate-300 w-full h-dvh flex-1 mx-auto"
 				)}
 			>
 				<Sidebar open={open} setOpen={setOpen} animate />
