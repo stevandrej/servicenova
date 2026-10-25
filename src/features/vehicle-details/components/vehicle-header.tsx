@@ -1,14 +1,23 @@
 import { Button } from "@nextui-org/react";
 import { IconArrowLeft, IconEdit, IconTrash } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
+import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { vehicleSlug } from "../../../utils/exportVehicles";
+import { ExportMenu } from "../../../components/export-menu";
 
 interface VehicleHeaderProps {
   onEdit: () => void;
   onDelete: () => void;
   isDeleting: boolean;
+  vehicle: TVehicleWithServices;
 }
 
-export const VehicleHeader = ({ onEdit, onDelete, isDeleting }: VehicleHeaderProps) => {
+export const VehicleHeader = ({
+  onEdit,
+  onDelete,
+  isDeleting,
+  vehicle,
+}: VehicleHeaderProps) => {
   const navigate = useNavigate();
 
   return (
@@ -21,7 +30,12 @@ export const VehicleHeader = ({ onEdit, onDelete, isDeleting }: VehicleHeaderPro
       >
         Back to Vehicles
       </Button>
-      <div className="flex gap-2 flex-1 md:justify-end justify-between">
+      <div className="flex gap-2 flex-1 md:justify-end justify-between items-center">
+        <ExportMenu
+          vehicles={[vehicle]}
+          slug={vehicleSlug(vehicle)}
+          variant="light"
+        />
         <Button
           color="primary"
           variant="light"

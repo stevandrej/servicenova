@@ -26,3 +26,5 @@ dist-ssr
 # Environment variables
 .env
 .env.d
+# Agent tooling (per-user overrides; .claude/settings.json IS committed)
+.claude/settings.local.json

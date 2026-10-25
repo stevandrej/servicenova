@@ -1,0 +1,24 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(pnpm install)",
+			"Bash(pnpm dev:*)",
+			"Bash(pnpm build)",
+			"Bash(pnpm typecheck)",
+			"Bash(pnpm lint)",
+			"Bash(pnpm lint:watch)",
+			"Bash(pnpm preview:*)",
+			"Bash(pnpm why:*)",
+			"Bash(pnpm list:*)",
+			"Bash(npx tsc:*)",
+			"Bash(git status)",
+			"Bash(git status:*)",
+			"Bash(git diff:*)",
+			"Bash(git log:*)",
+			"Bash(git show:*)",
+			"Bash(git branch:*)",
+			"Bash(git ls-files:*)",
+			"Bash(git blame:*)"
+		]
+	}
+}

@@ -1,12 +1,13 @@
 import { TVehicle } from "../../types/vehicle.type";
 import { cn } from "../../lib/utils";
 import { getStatusColorClasses } from "./getStatusColorClasses";
-import { useNavigate } from "@tanstack/react-router";
-import { Button } from "@nextui-org/react";
+import { Link } from "@tanstack/react-router";
+import { Button, useDisclosure } from "@nextui-org/react";
 import { IconTrash } from "@tabler/icons-react";
 import { useDeleteVehicle } from "../../services/useDeleteVehicle";
 import fallbackVehicleImage from "../../assets/no-image.jpg";
 import { AddToCalendar } from "../../components/add-to-calendar";
+import { ConfirmDialog } from "../../components/confirm-dialog";
 import { formatDate } from "../../utils/formatDate";
 
 interface VehicleCardProps {
@@ -16,43 +17,22 @@ interface VehicleCardProps {
 
 export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
   const statusColorClasses = getStatusColorClasses(nextService);
-  const navigate = useNavigate();
   const { mutate: deleteVehicle, isPending: isDeleting } = useDeleteVehicle();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleClick = () => {
-    navigate({
-      to: `/vehicles/$vehicleId`,
-      params: { vehicleId: vehicle.id },
-    });
-  };
-
-  const handleDelete = () => {
-    if (
-      confirm(
-        "Are you sure you want to delete this vehicle? This action cannot be undone."
-      )
-    ) {
-      deleteVehicle(vehicle.id);
-    }
-  };
   return (
+    // Stretched-link layout: the card itself stays a plain container, and a
+    // real <Link> is overlaid across it. Nesting the delete button, the
+    // calendar dropdown or a modal *inside* an <a> would navigate on every
+    // click - React propagates portalled events through the React tree, so
+    // even the modal's Cancel button would follow the link.
     <div
-      onClick={handleClick}
-      className="relative rounded-md overflow-hidden w-full shadow-lg transform-gpu transition-transform duration-400 hover:scale-[1.01] hover:cursor-pointer group"
+      className={cn(
+        "relative rounded-md overflow-hidden w-full shadow-lg group",
+        "transform-gpu transition-transform duration-300 hover:scale-[1.01]",
+        "focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+      )}
     >
-      {/* Delete Button - Visible on Hover */}
-      <Button
-        isIconOnly
-        color="danger"
-        variant="flat"
-        size="sm"
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-        onPress={handleDelete}
-        isLoading={isDeleting}
-      >
-        <IconTrash size={18} />
-      </Button>
-
       {/* Image */}
       <div className="bg-neutral-200 h-64">
         <img
@@ -63,12 +43,7 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
       </div>
 
       {/* Content */}
-      <div
-        className={cn(
-          "p-4 bg-gradient-to-t from-75%",
-          statusColorClasses
-        )}
-      >
+      <div className={cn("p-4 bg-gradient-to-t from-75%", statusColorClasses)}>
         <div className="flex flex-col gap-1">
           <h3 className="font-outfit text-lg font-semibold tracking-tight leading-none">
             <span className="capitalize">{vehicle.make}</span>{" "}
@@ -86,13 +61,58 @@ export const VehicleCard = ({ vehicle, nextService }: VehicleCardProps) => {
                 <span className="text-xs tracking-tight">Next Service:</span>{" "}
                 {formatDate(nextService)}
               </p>
-              <div onClick={(e) => e.stopPropagation()}>
-                <AddToCalendar date={nextService} vehicleMake={vehicle.make} vehicleModel={vehicle.model} />
+              {/* Lifted above the link overlay so it stays clickable. */}
+              <div className="relative z-20">
+                <AddToCalendar
+                  date={nextService}
+                  vehicleMake={vehicle.make}
+                  vehicleModel={vehicle.model}
+                  vehiclePlate={vehicle.plate}
+                />
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* The link overlay. Text underneath is not interactive, so covering it
+          is what makes the whole card clickable. */}
+      <Link
+        to="/vehicles/$vehicleId"
+        params={{ vehicleId: vehicle.id }}
+        aria-label={`${vehicle.make} ${vehicle.model}, plate ${vehicle.plate}`}
+        className="absolute inset-0 z-10 rounded-md focus:outline-none"
+      />
+
+      {/* Delete. Kept visible on touch: an opacity-0 button still receives
+          taps, so hover-only made the corner of every card an invisible
+          destructive control on a phone. */}
+      <div className="absolute top-2 right-2 z-20">
+        <Button
+          isIconOnly
+          color="danger"
+          variant="flat"
+          size="sm"
+          aria-label={`Delete ${vehicle.make} ${vehicle.model}`}
+          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity"
+          onPress={onOpen}
+          isLoading={isDeleting}
+        >
+          <IconTrash size={18} />
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={onClose}
+        onConfirm={() => {
+          deleteVehicle(vehicle.id);
+          onClose();
+        }}
+        title="Delete vehicle?"
+        body={`${vehicle.make} ${vehicle.model} (${vehicle.plate}) and all of its service records will be permanently deleted. This cannot be undone.`}
+        isPending={isDeleting}
+      />
     </div>
   );
 };

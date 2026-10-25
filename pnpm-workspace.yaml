@@ -1,0 +1,11 @@
+# Tailwind scans node_modules/@nextui-org/theme for the classes NextUI's own
+# components use, so that package has to sit at a predictable path.
+publicHoistPattern:
+  - '*@nextui-org/*'
+
+allowBuilds:
+  '@firebase/util': true
+  '@tsparticles/engine': true
+  esbuild: true
+  protobufjs: true
+  sharp: true

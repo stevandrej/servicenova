@@ -1,6 +1,7 @@
 import { Card, CardBody, Progress } from "@nextui-org/react";
 import { useMemo } from "react";
 import { TVehicleWithServices } from "../../../types/vehicle.type";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 export default function MonthlySpendingChart({
 	vehicles,
@@ -8,27 +9,35 @@ export default function MonthlySpendingChart({
 	vehicles: TVehicleWithServices[];
 }) {
 	const monthlySpending = useMemo(() => {
+		const now = new Date();
+
+		// Buckets are keyed on year *and* month - matching on the month name
+		// alone would fold last year's September into this year's.
 		const last6Months = Array.from({ length: 6 }, (_, i) => {
-			const date = new Date();
-			date.setMonth(date.getMonth() - i);
-			return date.toLocaleString("default", { month: "short" });
+			const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+			return {
+				year: date.getFullYear(),
+				month: date.getMonth(),
+				label: date.toLocaleString("en-GB", { month: "short" }),
+			};
 		}).reverse();
 
-		const spending = last6Months.map((month) => ({
-			month,
-			amount: vehicles
-				.flatMap((v) => v.services || [])
-				.filter((s) => {
-					const serviceMonth = s.date.toLocaleString("default", {
-						month: "short",
-					});
-					return serviceMonth === month;
-				})
+		const services = vehicles.flatMap((v) => v.services || []);
+
+		return last6Months.map((bucket) => ({
+			key: `${bucket.year}-${bucket.month}`,
+			label: bucket.label,
+			amount: services
+				.filter(
+					(s) =>
+						s.date.getFullYear() === bucket.year &&
+						s.date.getMonth() === bucket.month
+				)
 				.reduce((acc, s) => acc + (s.price || 0), 0),
 		}));
-
-		return { months: last6Months, data: spending };
 	}, [vehicles]);
+
+	const maxAmount = Math.max(...monthlySpending.map((d) => d.amount), 0);
 
 	return (
 		<div>
@@ -36,22 +45,15 @@ export default function MonthlySpendingChart({
 			<Card>
 				<CardBody className="p-6">
 					<div className="space-y-4">
-						{monthlySpending.data.map((item) => (
-							<div key={item.month} className="space-y-2">
+						{monthlySpending.map((item) => (
+							<div key={item.key} className="space-y-2">
 								<div className="flex justify-between text-sm">
-									<span>{item.month}</span>
-									<span>
-										{item.amount.toLocaleString()}{" "}
-										<span className="text-xs">MKD</span>
-									</span>
+									<span>{item.label}</span>
+									<span>{formatCurrency(item.amount)}</span>
 								</div>
 								<Progress
 									value={item.amount}
-									maxValue={Math.max(
-										...monthlySpending.data.map(
-											(d) => d.amount
-										)
-									)}
+									maxValue={maxAmount || 1}
 									className="h-2"
 									color="primary"
 								/>

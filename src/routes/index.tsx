@@ -1,9 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { auth } from "../config/firebase";
+import { authService } from "../services/auth.service";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
-    const user = auth.currentUser;
+    // waitForUser resolves on the first auth state callback, so a hard refresh
+    // no longer bounces a signed-in user through /login.
+    const user = await authService.waitForUser();
     throw redirect({
       to: user ? "/vehicles" : "/login",
     });
