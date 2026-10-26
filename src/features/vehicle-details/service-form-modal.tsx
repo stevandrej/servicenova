@@ -53,10 +53,14 @@ export const ServiceFormModal = ({
 	// Adjusted during render rather than in an effect, per React's guidance for
 	// resetting state on prop changes: https://react.dev/learn/you-might-not-need-an-effect
 	const [syncedKey, setSyncedKey] = useState<string | null>(null);
-	const openKey =
-		isOpen || service
-			? `${isOpen}:${service?.id ?? ""}:${nextService?.getTime() ?? ""}`
-			: null;
+	const openKey = isOpen
+		? `${service?.id ?? ""}:${nextService?.getTime() ?? ""}`
+		: null;
+	// Forget the key on close, so reopening for the same service - or for
+	// another add after a cancel - still resets instead of keeping old input.
+	if (openKey === null && syncedKey !== null) {
+		setSyncedKey(null);
+	}
 	if (openKey !== null && openKey !== syncedKey) {
 		setSyncedKey(openKey);
 		setDate(
