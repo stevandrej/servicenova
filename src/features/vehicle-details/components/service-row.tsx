@@ -24,7 +24,7 @@ export const ServiceRowBody = memo(
     return (
       <div className="flex flex-col gap-3 pb-1">
         {service.notes ? (
-          <p className="text-small text-default-600 whitespace-pre-line">
+          <p className="text-small text-default-600 whitespace-pre-line break-words">
             {service.notes}
           </p>
         ) : (

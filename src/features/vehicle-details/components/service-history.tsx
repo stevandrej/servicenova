@@ -22,8 +22,8 @@ export const ServiceHistory = ({
   const groups = useMemo(() => groupServicesByYear(services), [services]);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6">
-      <h2 className="text-xl font-semibold mb-6">Service History</h2>
+    <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
+      <h2 className="text-xl font-semibold mb-4 sm:mb-6">Service History</h2>
 
       {groups.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
@@ -57,9 +57,13 @@ export const ServiceHistory = ({
                 selectionMode="multiple"
                 variant="light"
                 showDivider={false}
+                className="px-0"
                 itemClasses={{
                   base: "border-b border-default-100 last:border-b-0",
                   trigger: "py-3 gap-3",
+                  // min-w-0 lets the title shrink so a long service type
+                  // truncates instead of widening the whole page.
+                  titleWrapper: "min-w-0",
                   title: "text-medium",
                   content: "pt-0 pb-4",
                 }}

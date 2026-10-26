@@ -22,13 +22,12 @@ export function serviceRowProps(service: TService, mileageDelta: number | null) 
         <Icon size={18} />
       </span>
     ),
+    // The date sits on the second line so the first only has to fit the type
+    // and the price - on a phone, date + type + price left no room for the type.
     title: (
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="flex items-baseline gap-3 min-w-0">
-          <span className="text-small tabular-nums text-default-500 flex-shrink-0">
-            {formatDayMonth(service.date)}
-          </span>
-          <span className="font-medium truncate">{service.serviceType}</span>
+      <div className="flex items-baseline justify-between gap-3 min-w-0">
+        <span className="font-medium truncate min-w-0">
+          {service.serviceType}
         </span>
         <span className="font-semibold tabular-nums flex-shrink-0">
           {formatCurrency(service.price)}
@@ -37,7 +36,7 @@ export function serviceRowProps(service: TService, mileageDelta: number | null) 
     ),
     subtitle: (
       <span className="text-small text-default-500 tabular-nums">
-        {service.mileage.toLocaleString("en-GB")} km
+        {formatDayMonth(service.date)} · {service.mileage.toLocaleString("en-GB")} km
         {mileageDelta !== null && (
           <> · +{mileageDelta.toLocaleString("en-GB")} km</>
         )}

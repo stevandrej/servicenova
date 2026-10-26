@@ -30,7 +30,8 @@ export const VehicleHeader = ({
       >
         Back to Vehicles
       </Button>
-      <div className="flex gap-2 flex-1 md:justify-end justify-between items-center">
+      {/* Full width below sm, so the actions get their own row on a phone. */}
+      <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:flex-1 md:justify-end justify-between items-center">
         <ExportMenu
           vehicles={[vehicle]}
           slug={vehicleSlug(vehicle)}
@@ -42,7 +43,7 @@ export const VehicleHeader = ({
           startContent={<IconEdit size={18} />}
           onPress={onEdit}
         >
-          Edit Vehicle
+          Edit<span className="hidden sm:inline"> Vehicle</span>
         </Button>
         <Button
           color="danger"
@@ -51,7 +52,7 @@ export const VehicleHeader = ({
           startContent={<IconTrash size={18} />}
           onPress={onDelete}
         >
-          Delete Vehicle
+          Delete<span className="hidden sm:inline"> Vehicle</span>
         </Button>
       </div>
     </div>

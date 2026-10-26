@@ -22,10 +22,10 @@ export const VehicleInfo = ({
   currentMileage,
 }: VehicleInfoProps) => {
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm border">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h1 className="text-2xl font-semibold">
+    <div className="p-4 sm:p-6 bg-white rounded-lg shadow-sm border">
+      <div className="flex justify-between items-start gap-3 mb-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold break-words">
             {vehicle.make} {vehicle.model}
           </h1>
           <p className="text-gray-500">
@@ -36,11 +36,12 @@ export const VehicleInfo = ({
           color="primary"
           endContent={<IconPlus size={18} />}
           onPress={onAddService}
+          className="flex-shrink-0"
         >
           Add Service
         </Button>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mt-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mt-4">
         <VehicleMetricCard
           title="Next Service Due"
           value={

@@ -71,7 +71,9 @@ export const VehicleDetails = ({ vehicle }: VehicleDetailsProps) => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    // w-full: with only mx-auto, a flex child sizes to its widest content, so
+    // one long line would widen the whole page past the screen.
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       <VehicleHeader
         onEdit={onOpenEditModal}
         onDelete={onOpenDelete}

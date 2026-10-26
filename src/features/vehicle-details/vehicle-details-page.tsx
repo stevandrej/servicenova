@@ -15,9 +15,9 @@ export function VehicleDetailsPage() {
   if (isLoading) {
     // Mirrors the real layout so the page does not jump when data lands.
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="w-full max-w-4xl mx-auto space-y-6">
         <Skeleton className="h-10 w-full rounded-lg" />
-        <div className="p-6 bg-white rounded-lg shadow-sm border space-y-4">
+        <div className="p-4 sm:p-6 bg-white rounded-lg shadow-sm border space-y-4">
           <Skeleton className="h-8 w-1/3 rounded-lg" />
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
             {Array.from({ length: 5 }, (_, i) => (
